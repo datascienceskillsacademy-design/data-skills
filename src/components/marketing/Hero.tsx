@@ -13,7 +13,7 @@ const avatars = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 via-white to-white">
+    <section className="relative overflow-hidden bg-linear-to-b from-primary-50 via-white to-white">
       <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary-200/40 blur-3xl" />
       <div className="absolute -right-24 top-40 h-80 w-80 rounded-full bg-accent-200/40 blur-3xl" />
 
@@ -49,8 +49,9 @@ export function Hero() {
             className="mt-6 max-w-lg text-balance text-lg text-neutral-600"
           >
             A practical 8-week live online programme for doctors, nurses, and
-            healthcare managers — learn to analyse patient data, build dashboards,
-            and apply AI tools without writing a single line of code.
+            healthcare managers — learn to analyse patient data, build
+            dashboards, and apply AI tools without writing a single line of
+            code.
           </motion.p>
 
           <motion.div
@@ -80,19 +81,30 @@ export function Hero() {
                   key={src}
                   className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-white"
                 >
-                  <Image src={src} alt="Healthcare professional" fill className="object-cover" sizes="40px" />
+                  <Image
+                    src={src}
+                    alt="Healthcare professional"
+                    fill
+                    className="object-cover"
+                    sizes="40px"
+                  />
                 </div>
               ))}
             </div>
             <div>
               <div className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-accent-400 text-accent-400" />
+                  <Star
+                    key={i}
+                    className="h-4 w-4 fill-accent-400 text-accent-400"
+                  />
                 ))}
               </div>
               <p className="text-sm text-neutral-500">
                 Taught by experts with{" "}
-                <span className="font-semibold text-neutral-800">30+ years</span>{" "}
+                <span className="font-semibold text-neutral-800">
+                  30+ years
+                </span>{" "}
                 in healthcare academia
               </p>
             </div>
@@ -106,7 +118,7 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="relative mx-auto aspect-square w-full max-w-md"
         >
-          <div className="absolute inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary-600 to-primary-800" />
+          <div className="absolute inset-4 rounded-[2.5rem] bg-linear-to-br from-primary-600 to-primary-800" />
           <div className="absolute inset-0 overflow-hidden rounded-[3rem] border-8 border-white shadow-2xl">
             <Image
               src="https://images.unsplash.com/photo-1551190822-a9333d879b1f?q=80&w=900&auto=format&fit=crop"
@@ -128,7 +140,9 @@ export function Hero() {
             <CheckCircle className="h-5 w-5 text-primary-600" />
             <div>
               <p className="text-xs text-neutral-400">Requirement</p>
-              <p className="text-sm font-bold text-neutral-900">No Coding Needed</p>
+              <p className="text-sm font-bold text-neutral-900">
+                No Coding Needed
+              </p>
             </div>
           </motion.div>
 
@@ -144,7 +158,9 @@ export function Hero() {
             </div>
             <div>
               <p className="text-xs text-neutral-400">Programme</p>
-              <p className="text-sm font-semibold text-neutral-800">16 Live Classes</p>
+              <p className="text-sm font-semibold text-neutral-800">
+                16 Live Classes
+              </p>
             </div>
           </motion.div>
         </motion.div>
