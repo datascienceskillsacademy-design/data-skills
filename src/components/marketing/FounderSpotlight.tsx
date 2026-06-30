@@ -7,9 +7,9 @@ export function FounderSpotlight({ founder }: { founder: Instructor }) {
   return (
     <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
       <FadeIn>
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-sm">
-          <div className="absolute -inset-3 rounded-[2.5rem] bg-gradient-to-br from-accent-200 to-primary-200" />
-          <div className="absolute inset-0 overflow-hidden rounded-[2rem] border-4 border-white shadow-2xl">
+        <div className="relative mx-auto aspect-4/5 w-full max-w-sm">
+          <div className="absolute -inset-3 rounded-[2.5rem] bg-linear-to-br from-accent-200 to-primary-200" />
+          <div className="absolute inset-0 overflow-hidden rounded-4xl border-4 border-white shadow-2xl">
             <Image
               src={founder.avatar}
               alt={founder.name}
@@ -24,9 +24,9 @@ export function FounderSpotlight({ founder }: { founder: Instructor }) {
       <FadeIn delay={0.1}>
         <Quote className="h-10 w-10 text-primary-200" />
         <p className="mt-4 text-balance font-display text-2xl font-semibold leading-snug text-neutral-900 sm:text-3xl">
-          &ldquo;We built DataSkills because the best way to learn data science is by
-          doing the work a real analyst or ML engineer does &mdash; not by
-          memorizing slides.&rdquo;
+          &ldquo;Healthcare professionals who understand data are not just better
+          clinicians &mdash; they become architects of healthier systems, smarter
+          policies, and more equitable care.&rdquo;
         </p>
         <div className="mt-6 flex items-center gap-3">
           <div>

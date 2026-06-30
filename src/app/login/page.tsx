@@ -56,7 +56,7 @@ export default function LoginPage() {
           className="object-cover"
           sizes="50vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent" />
 
         <div className="absolute bottom-12 left-12 right-12 rounded-3xl bg-white/10 p-6 backdrop-blur-md">
           <div className="flex">

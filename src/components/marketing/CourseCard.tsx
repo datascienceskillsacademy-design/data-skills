@@ -21,7 +21,7 @@ export function CourseCard({
   return (
     <Link href={`/courses#${course.slug}`} className="group block h-full">
       <Card className="flex h-full flex-col overflow-hidden transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:shadow-primary-900/10">
-        <div className="relative aspect-[16/10] w-full overflow-hidden">
+        <div className="relative aspect-16/10 w-full overflow-hidden">
           <Image
             src={course.thumbnail}
             alt={course.title}

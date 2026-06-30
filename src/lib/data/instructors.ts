@@ -2,51 +2,25 @@ import type { Instructor } from "@/lib/types";
 
 export const instructors: Instructor[] = [
   {
-    id: "founder-amelia",
-    name: "Amelia Hart",
-    role: "Founder & CEO, DataSkills",
-    bio: "Amelia spent eight years leading analytics teams at two Fortune 500 companies before founding DataSkills in 2021. She's obsessed with turning dense, academic data science into career-ready skills anyone can learn.",
-    avatar:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
+    id: "instr-gias",
+    name: "Prof. Dr. Gias U. Ahsan",
+    role: "Chief Trainer · Advisor, Strategy & Innovation, DIU",
+    bio: "With over 30 years of distinguished academic leadership, Dr. Ahsan served as Pro Vice Chancellor at North South University and founded the NSU Genome Research Institute — the first of its kind in Bangladesh. A WHO South-East Asia Technical Advisor and SEAPHEIN Executive Board Member, he has cultivated global research partnerships with Johns Hopkins, Cambridge, Oxford, and the University of Maryland, securing multi-million-dollar grants in public health and biosciences.",
+    avatar: "/instructor-1.png",
     isFounder: true,
     socials: {
-      linkedin: "https://linkedin.com",
-      twitter: "https://twitter.com",
+      linkedin:
+        "https://www.linkedin.com/in/professor-dr-gias-u-ahsan-77567468/",
     },
   },
   {
-    id: "instr-daniel",
-    name: "Daniel Reyes",
-    role: "Lead Instructor, Machine Learning",
-    bio: "Former ML engineer at a Series-B startup, Daniel has shipped recommendation systems used by millions of users. He teaches with a project-first philosophy: build it, break it, understand it.",
-    avatar:
-      "https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=600&auto=format&fit=crop",
+    id: "instr-ahmed",
+    name: "Ahmed Hossain, PhD",
+    role: "Co-Instructor · Professor, University of Sharjah, UAE",
+    bio: "Dr. Hossain holds a Professor position in Healthcare Management at the University of Sharjah and serves as Director of the Global Health Institute at NSU. He earned his PhD from the University of Toronto's Dalla Lana School of Public Health (2010) and was a Canadian Institute of Health Research Fellow at McMaster University. He has published over 118 articles in journals including The Lancet and JAMA, with research focused on statistical genomics, chronic disease, and infectious disease epidemiology.",
+    avatar: "/instructor-2.jpeg",
     socials: {
-      linkedin: "https://linkedin.com",
-      github: "https://github.com",
-    },
-  },
-  {
-    id: "instr-priya",
-    name: "Priya Nair",
-    role: "Instructor, Data Visualization & Analytics",
-    bio: "Priya is a data storyteller who has trained over 12,000 students. Previously a senior analyst at a global consulting firm, she specializes in turning raw numbers into decisions executives act on.",
-    avatar:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600&auto=format&fit=crop",
-    socials: {
-      linkedin: "https://linkedin.com",
-    },
-  },
-  {
-    id: "instr-marcus",
-    name: "Marcus Chen",
-    role: "Instructor, Python & Statistics",
-    bio: "Marcus holds a PhD in statistics and spent six years teaching at the university level before joining DataSkills full-time to make rigorous statistical thinking accessible online.",
-    avatar:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=600&auto=format&fit=crop",
-    socials: {
-      linkedin: "https://linkedin.com",
-      github: "https://github.com",
+      linkedin: "https://www.linkedin.com/in/ahmed-hossain-phd-00448934/",
     },
   },
 ];

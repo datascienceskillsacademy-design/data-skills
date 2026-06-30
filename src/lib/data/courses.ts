@@ -17,7 +17,7 @@ export const courses: Course[] = [
     lessonsCount: 84,
     thumbnail:
       "https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?q=80&w=1200&auto=format&fit=crop",
-    instructorId: "instr-marcus",
+    instructorId: "instr-gias",
     syllabus: [
       {
         module: "Python Fundamentals",
@@ -49,7 +49,7 @@ export const courses: Course[] = [
     lessonsCount: 96,
     thumbnail:
       "https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=1200&auto=format&fit=crop",
-    instructorId: "instr-daniel",
+    instructorId: "instr-ahmed",
     syllabus: [
       {
         module: "Supervised Learning",
@@ -81,7 +81,7 @@ export const courses: Course[] = [
     lessonsCount: 52,
     thumbnail:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
-    instructorId: "instr-priya",
+    instructorId: "instr-ahmed",
     syllabus: [
       {
         module: "Visualization Principles",
@@ -113,7 +113,7 @@ export const courses: Course[] = [
     lessonsCount: 110,
     thumbnail:
       "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop",
-    instructorId: "instr-daniel",
+    instructorId: "instr-ahmed",
     syllabus: [
       {
         module: "Neural Network Foundations",
@@ -144,7 +144,7 @@ export const courses: Course[] = [
     lessonsCount: 40,
     thumbnail:
       "https://images.unsplash.com/photo-1543286386-713bdd548da4?q=80&w=1200&auto=format&fit=crop",
-    instructorId: "instr-marcus",
+    instructorId: "instr-gias",
     syllabus: [
       {
         module: "Descriptive Statistics",
@@ -176,7 +176,7 @@ export const courses: Course[] = [
     lessonsCount: 68,
     thumbnail:
       "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=1200&auto=format&fit=crop",
-    instructorId: "instr-priya",
+    instructorId: "instr-ahmed",
     syllabus: [
       {
         module: "SQL Fundamentals",
