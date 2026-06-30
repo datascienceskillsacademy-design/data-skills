@@ -187,7 +187,9 @@ export default function HomePage() {
 
               <h2 className="mt-4 font-display text-3xl font-bold leading-snug text-neutral-900 sm:text-4xl">
                 AI &amp; Data Analytics for{" "}
-                <span className="text-primary-600">Healthcare Professionals</span>
+                <span className="text-primary-600">
+                  Healthcare Professionals
+                </span>
               </h2>
               <p className="mt-1 text-base font-medium text-neutral-400">
                 No Coding Required
@@ -208,7 +210,9 @@ export default function HomePage() {
                     <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
                       {label}
                     </p>
-                    <p className="mt-0.5 text-sm font-bold text-neutral-900">{value}</p>
+                    <p className="mt-0.5 text-sm font-bold text-neutral-900">
+                      {value}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -232,8 +236,9 @@ export default function HomePage() {
               </div>
 
               <p className="mt-6 text-neutral-500">
-                A practical, no-code course designed for healthcare professionals who want to
-                harness the power of AI and data analytics — without writing a single line of code.
+                A practical, no-code course designed for healthcare
+                professionals who want to harness the power of AI and data
+                analytics — without writing a single line of code.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
@@ -260,14 +265,20 @@ export default function HomePage() {
               </div>
               {/* Floating batch card */}
               <div className="absolute -left-4 -top-4 rounded-2xl bg-white px-4 py-3 shadow-xl">
-                <p className="text-xs font-medium text-neutral-400">Next Batch</p>
-                <p className="text-sm font-bold text-neutral-900">Starting Soon</p>
+                <p className="text-xs font-medium text-neutral-400">
+                  Next Batch
+                </p>
+                <p className="text-sm font-bold text-neutral-900">
+                  Starting Soon
+                </p>
               </div>
               {/* Floating seats card */}
               <div className="absolute -bottom-4 -right-4 flex items-center gap-2 rounded-2xl bg-primary-700 px-4 py-3 shadow-xl">
                 <Users className="h-4 w-4 text-primary-200" />
                 <div>
-                  <p className="text-xs font-medium text-primary-200">Limited Seats</p>
+                  <p className="text-xs font-medium text-primary-200">
+                    Limited Seats
+                  </p>
                   <p className="text-sm font-bold text-white">25–30 Students</p>
                 </div>
               </div>
@@ -519,13 +530,13 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-        <FadeIn className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary-700 via-primary-600 to-accent-500 px-8 py-16 text-center sm:px-16">
+        <FadeIn className="relative overflow-hidden rounded-[2.5rem] bg-linear-to-br from-primary-700 via-primary-600 to-accent-500 px-8 py-16 text-center sm:px-16">
           <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
             Your healthcare career, powered by data
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-primary-100">
-            Join the next cohort of healthcare professionals learning AI &amp; analytics.
-            No coding. No prior experience. Just results.
+            Join the next cohort of healthcare professionals learning AI &amp;
+            analytics. No coding. No prior experience. Just results.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <LinkButton href="/course#enroll" variant="secondary" size="lg">

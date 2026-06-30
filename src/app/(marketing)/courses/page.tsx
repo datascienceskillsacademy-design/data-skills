@@ -1,32 +1,47 @@
+export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
-import { CoursesExplorer } from "@/components/marketing/CoursesExplorer";
 import { FadeIn } from "@/components/motion/FadeIn";
-import { courses } from "@/lib/data/courses";
-import { instructors } from "@/lib/data/instructors";
+import { prisma } from "@/lib/prisma";
+import { CourseCard } from "@/components/marketing/CourseCard";
 
 export const metadata: Metadata = {
   title: "Courses — DataSkills",
-  description: "Browse career-track data science, Python, and machine learning courses.",
+  description: "Browse our healthcare data & AI courses.",
 };
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  const courses = await prisma.course.findMany({
+    where: { isPublished: true },
+    include: { modules: { orderBy: { order: "asc" } } },
+    orderBy: { createdAt: "asc" },
+  });
+
   return (
-    <div className="bg-gradient-to-b from-primary-50 via-white to-white">
+    <div className="bg-linear-to-b from-primary-50 via-white to-white">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <FadeIn className="max-w-2xl">
           <h1 className="font-display text-4xl font-bold text-neutral-900 sm:text-5xl">
-            All courses
+            All Courses
           </h1>
           <p className="mt-4 text-lg text-neutral-600">
-            Six career-track courses covering the full data science stack —
-            from Python fundamentals to deep learning. Pick a starting point
-            and build from there.
+            Practical, no-code courses designed for healthcare professionals
+            who want to harness AI and data analytics.
           </p>
         </FadeIn>
 
-        <div className="mt-12">
-          <CoursesExplorer courses={courses} instructors={instructors} />
-        </div>
+        {courses.length === 0 ? (
+          <div className="mt-16 text-center text-neutral-500">
+            No courses available yet. Check back soon.
+          </div>
+        ) : (
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course, i) => (
+              <FadeIn key={course.id} delay={i * 0.05}>
+                <CourseCard course={course} />
+              </FadeIn>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

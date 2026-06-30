@@ -2,15 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { GraduationCap, Star } from "lucide-react";
-import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 
 export const metadata: Metadata = {
-  title: "Sign In — DataSkills",
-  description: "Sign in to your DataSkills account.",
+  title: "Create Account — DataSkills",
+  description: "Join DataSkills and start learning.",
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <div className="relative flex min-h-screen w-full overflow-hidden bg-neutral-950">
       <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-primary-600/30 blur-3xl" />
@@ -30,18 +29,18 @@ export default function LoginPage() {
 
           <div className="mt-10 rounded-3xl bg-white p-8 shadow-2xl">
             <h1 className="font-display text-2xl font-bold text-neutral-900">
-              Welcome back
+              Create your account
             </h1>
             <p className="mt-1 text-sm text-neutral-500">
-              Sign in to continue your learning journey.
+              Join healthcare professionals learning AI & data analytics.
             </p>
             <div className="mt-6">
-              <SignInForm />
+              <SignUpForm />
             </div>
             <p className="mt-5 text-center text-sm text-neutral-500">
-              No account?{" "}
-              <Link href="/register" className="font-medium text-primary-600 hover:underline">
-                Create one
+              Already have an account?{" "}
+              <Link href="/login" className="font-medium text-primary-600 hover:underline">
+                Sign in
               </Link>
             </p>
           </div>
@@ -65,10 +64,10 @@ export default function LoginPage() {
             ))}
           </div>
           <p className="mt-3 text-lg font-medium text-white">
-            &ldquo;DataSkills gave me practical AI skills I could use in my clinic
-            the very next day.&rdquo;
+            &ldquo;No coding background, but I completed the course and built my
+            first healthcare dashboard.&rdquo;
           </p>
-          <p className="mt-3 text-sm text-white/70">Dr. Rashid Ahmed, Physician</p>
+          <p className="mt-3 text-sm text-white/70">Nurse Fatima Khatun, ICU</p>
         </div>
       </div>
     </div>
