@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { GraduationCap, Globe, Link2, Mail } from "lucide-react";
+import Image from "next/image";
+import { Globe, Link2, Mail } from "lucide-react";
 
 const columns = [
   {
@@ -34,11 +35,14 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2 font-display text-lg font-bold text-white">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-600">
-                <GraduationCap className="h-5 w-5" />
-              </span>
-              DataSkills
+            <div className="inline-flex rounded-xl bg-white/95 px-4 py-3">
+              <Image
+                src="/logo.png"
+                alt="Data Science Skills Academy"
+                width={2240}
+                height={932}
+                className="h-14 w-auto object-contain"
+              />
             </div>
             <p className="mt-4 max-w-sm text-sm text-neutral-400">
               Career-focused data science education. Real instructors, real

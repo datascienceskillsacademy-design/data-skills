@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Menu, X, LayoutDashboard, LogOut, User } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LinkButton } from "@/components/ui/Button";
@@ -37,14 +37,15 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-40 border-b border-neutral-200/70 bg-white/80 backdrop-blur-md">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-display text-lg font-bold text-neutral-900"
-          >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-600 text-white">
-              <GraduationCap className="h-5 w-5" />
-            </span>
-            DataSkills
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo-mark.png"
+              alt="Data Science Skills Academy"
+              width={2220}
+              height={734}
+              priority
+              className="h-11 w-auto object-contain"
+            />
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
