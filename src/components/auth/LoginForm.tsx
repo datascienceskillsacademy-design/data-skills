@@ -45,7 +45,7 @@ export function LoginForm() {
       className="space-y-5"
     >
       <div>
-        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-neutral-700">
+        <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
           Email address
         </label>
         <div className="relative">
@@ -57,14 +57,14 @@ export function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-10 pr-4 text-sm text-neutral-900 outline-none transition-colors focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+            className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-10 pr-4 text-sm text-neutral-900 outline-none transition-colors focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
           />
         </div>
       </div>
 
       <div>
         <div className="mb-1.5 flex items-center justify-between">
-          <label htmlFor="password" className="block text-sm font-medium text-neutral-700">
+          <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Password
           </label>
           <span className="cursor-pointer text-xs font-medium text-primary-600 hover:text-primary-700">
@@ -80,12 +80,12 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-10 pr-10 text-sm text-neutral-900 outline-none transition-colors focus:border-primary-400 focus:ring-2 focus:ring-primary-100"
+            className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-10 pr-10 text-sm text-neutral-900 outline-none transition-colors focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
           />
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
             aria-label="Toggle password visibility"
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -97,7 +97,7 @@ export function LoginForm() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600"
+          className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/40"
         >
           {error}
         </motion.p>

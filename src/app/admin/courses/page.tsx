@@ -2,7 +2,8 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
-import { Plus, Pencil } from "lucide-react";
+import { Plus } from "lucide-react";
+import { CourseRowActions } from "./CourseRowActions";
 
 export default async function AdminCoursesPage() {
   const courses = await prisma.course.findMany({
@@ -56,13 +57,7 @@ export default async function AdminCoursesPage() {
                   </span>
                 </td>
                 <td className="px-5 py-3">
-                  <Link
-                    href={`/admin/courses/${course.id}`}
-                    className="flex items-center gap-1.5 text-xs font-medium text-primary-600 hover:text-primary-800"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                    Edit
-                  </Link>
+                  <CourseRowActions course={course} />
                 </td>
               </tr>
             ))}

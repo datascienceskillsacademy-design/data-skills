@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { ImagePlus, Loader2, X } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import type { Course } from "@/generated/prisma/client";
 
@@ -34,6 +36,37 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleThumbnailSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setUploadError("");
+    setUploading(true);
+
+    try {
+      const body = new FormData();
+      body.append("file", file);
+
+      const res = await fetch("/api/admin/upload", { method: "POST", body });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setUploadError(data.error ?? "Upload failed.");
+        return;
+      }
+
+      setForm((prev) => ({ ...prev, thumbnail: data.url }));
+    } catch {
+      setUploadError("Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -53,6 +86,7 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
     try {
       const payload = {
         ...form,
+        thumbnail: form.thumbnail || undefined,
         price: Number(form.price),
         originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
         classCount: Number(form.classCount),
@@ -125,18 +159,64 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
         <h2 className="mb-5 text-sm font-semibold uppercase tracking-widest text-neutral-400">
           Thumbnail
         </h2>
-        <div>
-          <label className={labelClass}>Thumbnail URL (Cloudinary or any URL)</label>
-          <input
-            name="thumbnail"
-            value={form.thumbnail}
-            onChange={handleChange}
-            className={fieldClass}
-            placeholder="https://res.cloudinary.com/..."
-          />
-          <p className="mt-1.5 text-xs text-neutral-400">
-            Upload to Cloudinary manually and paste the URL here.
-          </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <div className="relative flex h-32 w-52 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-neutral-200 bg-neutral-50">
+            {form.thumbnail ? (
+              <>
+                <Image
+                  src={form.thumbnail}
+                  alt="Course thumbnail"
+                  fill
+                  sizes="208px"
+                  className="object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, thumbnail: "" }))}
+                  className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                  aria-label="Remove thumbnail"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </>
+            ) : (
+              <ImagePlus className="h-6 w-6 text-neutral-300" />
+            )}
+          </div>
+
+          <div className="flex-1">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              onChange={handleThumbnailSelect}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-2 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-60"
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Uploading…
+                </>
+              ) : (
+                <>
+                  <ImagePlus className="h-4 w-4" />
+                  {form.thumbnail ? "Replace image" : "Upload image"}
+                </>
+              )}
+            </button>
+            <p className="mt-1.5 text-xs text-neutral-400">
+              JPEG, PNG, WebP, or AVIF. Max 5MB. Uploaded to Cloudinary.
+            </p>
+            {uploadError && (
+              <p className="mt-1.5 text-xs text-red-600">{uploadError}</p>
+            )}
+          </div>
         </div>
       </Card>
 

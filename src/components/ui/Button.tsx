@@ -8,10 +8,10 @@ type Size = "sm" | "md" | "lg";
 const variantClasses: Record<Variant, string> = {
   primary:
     "bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-600/20",
-  secondary: "bg-accent-400 text-neutral-950 hover:bg-accent-500",
+  secondary: "bg-accent-400 text-[#100c1f] hover:bg-accent-500",
   outline:
-    "border border-neutral-300 text-neutral-800 hover:bg-neutral-100 bg-white/60",
-  ghost: "text-neutral-700 hover:bg-neutral-100",
+    "border border-neutral-300 text-neutral-800 hover:bg-neutral-100 bg-white/60 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-200 dark:hover:bg-neutral-800",
+  ghost: "text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800",
 };
 
 const sizeClasses: Record<Size, string> = {

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Bell, LogOut } from "lucide-react";
 import type { User } from "@/lib/types";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Topbar({ user }: { user: User }) {
   const router = useRouter();
@@ -15,7 +16,7 @@ export function Topbar({ user }: { user: User }) {
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-6 py-4 backdrop-blur-md lg:px-10">
+    <header className="flex items-center justify-between border-b border-neutral-200/70 bg-white/80 px-6 py-4 backdrop-blur-md lg:px-10 dark:border-neutral-800 dark:bg-neutral-950/80">
       <div>
         <p className="text-xs text-neutral-400">Dashboard</p>
         <h2 className="font-display text-lg font-semibold text-neutral-900">
@@ -24,9 +25,11 @@ export function Topbar({ user }: { user: User }) {
       </div>
 
       <div className="flex items-center gap-4">
+        {/* <ThemeToggle /> */}
+
         <button
           aria-label="Notifications"
-          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:bg-neutral-100"
+          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
         >
           <Bell className="h-4 w-4" />
           <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-accent-500" />
@@ -34,7 +37,7 @@ export function Topbar({ user }: { user: User }) {
 
         <button
           onClick={handleLogout}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:bg-red-50 hover:text-red-600 lg:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:bg-red-50 hover:text-red-600 lg:hidden dark:border-neutral-700 dark:hover:bg-red-950/40"
           aria-label="Log out"
         >
           <LogOut className="h-4 w-4" />

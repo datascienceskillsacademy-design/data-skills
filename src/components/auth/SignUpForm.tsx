@@ -53,26 +53,26 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     <div className="space-y-5">
       <button
         onClick={handleGoogle}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
       >
         <GoogleIcon />
         Sign up with Google
       </button>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 border-t border-neutral-200" />
+        <div className="flex-1 border-t border-neutral-200 dark:border-neutral-700" />
         <span className="text-xs text-neutral-400">or</span>
-        <div className="flex-1 border-t border-neutral-200" />
+        <div className="flex-1 border-t border-neutral-200 dark:border-neutral-700" />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">
+          <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600 dark:bg-red-950/40">
             {error}
           </p>
         )}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-neutral-700">
+          <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Full Name
           </label>
           <input
@@ -80,12 +80,12 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+            className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:ring-primary-900"
             placeholder="Dr. Jane Smith"
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-neutral-700">
+          <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Email
           </label>
           <input
@@ -93,12 +93,12 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+            className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:ring-primary-900"
             placeholder="you@example.com"
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-neutral-700">
+          <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Password
           </label>
           <input
@@ -107,7 +107,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+            className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:ring-primary-900"
             placeholder="Min 6 characters"
           />
         </div>

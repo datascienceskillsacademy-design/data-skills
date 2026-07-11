@@ -145,7 +145,7 @@ export default async function CourseDetailPage({ params }: Props) {
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href="#enroll"
-                  className="inline-flex items-center gap-2 rounded-full bg-accent-400 px-7 py-3.5 text-base font-semibold text-neutral-950 transition-all hover:bg-accent-500 active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent-400 px-7 py-3.5 text-base font-semibold text-[#100c1f] transition-all hover:bg-accent-500 active:scale-[0.98]"
                 >
                   Enroll Now — BDT {course.price.toLocaleString("en-BD")}
                   <ArrowRight className="h-4 w-4" />
