@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -19,6 +20,7 @@ const schema = z.object({
   whatsappLink: z.string().optional(),
   meetLink: z.string().optional(),
   isPublished: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
 });
 
 async function requireAdmin() {
@@ -42,6 +44,9 @@ export async function PATCH(
     const data = schema.parse(body);
 
     const course = await prisma.course.update({ where: { id }, data });
+    revalidatePath("/courses");
+    revalidatePath(`/courses/${course.slug}`);
+    revalidatePath("/");
     return NextResponse.json(course);
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -63,7 +68,10 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    await prisma.course.delete({ where: { id } });
+    const course = await prisma.course.delete({ where: { id } });
+    revalidatePath("/courses");
+    revalidatePath(`/courses/${course.slug}`);
+    revalidatePath("/");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error(err);

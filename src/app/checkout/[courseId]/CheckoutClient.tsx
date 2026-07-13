@@ -2,15 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  CreditCard,
-  Smartphone,
-  Building2,
-  CheckCircle2,
-  Clock,
-  ArrowRight,
-} from "lucide-react";
+import { Smartphone, CheckCircle2, Clock, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { BKASH_MERCHANT_NUMBER } from "@/lib/payment";
 
 interface Course {
   id: string;
@@ -23,39 +17,8 @@ interface CheckoutClientProps {
   existingEnrollment: { status: string } | null;
 }
 
-const offlineMethods = [
-  {
-    key: "bkash",
-    label: "bKash",
-    icon: Smartphone,
-    color: "bg-pink-50 border-pink-200",
-    account: "01711-000000",
-    type: "Personal",
-  },
-  {
-    key: "nagad",
-    label: "Nagad",
-    icon: Smartphone,
-    color: "bg-orange-50 border-orange-200",
-    account: "01711-111111",
-    type: "Personal",
-  },
-  {
-    key: "bank",
-    label: "Bank Transfer",
-    icon: Building2,
-    color: "bg-blue-50 border-blue-200",
-    account: "Bank Asia — AC: 1234567890",
-    type: "Branch: Dhanmondi",
-  },
-] as const;
-
-type OfflineKey = (typeof offlineMethods)[number]["key"];
-
 export function CheckoutClient({ course, existingEnrollment }: CheckoutClientProps) {
   const router = useRouter();
-  const [paymentMode, setPaymentMode] = useState<"online" | "offline">("offline");
-  const [offlineMethod, setOfflineMethod] = useState<OfflineKey>("bkash");
   const [reference, setReference] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -120,24 +83,15 @@ export function CheckoutClient({ course, existingEnrollment }: CheckoutClientPro
     setSubmitting(true);
 
     try {
-      const body =
-        paymentMode === "online"
-          ? {
-              courseId: course.id,
-              paymentMethod: "ONLINE",
-              transactionId: `SSL_DUMMY_${Date.now()}`,
-            }
-          : {
-              courseId: course.id,
-              paymentMethod: "OFFLINE",
-              offlinePaymentMethod: offlineMethod,
-              offlineReference: reference,
-            };
-
       const res = await fetch("/api/enrollments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          courseId: course.id,
+          paymentMethod: "OFFLINE",
+          offlinePaymentMethod: "bkash",
+          offlineReference: reference,
+        }),
       });
 
       if (!res.ok) {
@@ -167,129 +121,58 @@ export function CheckoutClient({ course, existingEnrollment }: CheckoutClientPro
         </div>
       </Card>
 
-      {/* Payment method selection */}
+      {/* Payment: bKash only */}
       <Card className="p-6">
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-neutral-400">
           Payment Method
         </h2>
 
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setPaymentMode("online")}
-            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
-              paymentMode === "online"
-                ? "border-primary-500 bg-primary-50"
-                : "border-neutral-200 hover:border-neutral-300"
-            }`}
-          >
-            <CreditCard
-              className={`h-5 w-5 ${paymentMode === "online" ? "text-primary-600" : "text-neutral-400"}`}
-            />
-            <div>
-              <p className="text-sm font-semibold text-neutral-900">Online</p>
-              <p className="text-xs text-neutral-400">SSLCommerz</p>
+        <div className="space-y-4">
+          <div className="rounded-xl border border-pink-200 bg-pink-50 p-4">
+            <div className="flex items-center gap-2">
+              <Smartphone className="h-5 w-5 text-pink-600" />
+              <p className="text-sm font-semibold text-neutral-900">bKash</p>
+              <span className="ml-auto rounded-full bg-pink-100 px-2.5 py-0.5 text-[11px] font-semibold text-pink-700">
+                Merchant
+              </span>
             </div>
-          </button>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-neutral-400">
+              Send BDT {course.price.toLocaleString("en-BD")} to
+            </p>
+            <p className="mt-1 text-2xl font-bold tracking-wide text-neutral-900">
+              {BKASH_MERCHANT_NUMBER}
+            </p>
+            <p className="text-sm text-neutral-500">
+              Use the &ldquo;Payment&rdquo; option in the bKash app for merchant numbers.
+            </p>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setPaymentMode("offline")}
-            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
-              paymentMode === "offline"
-                ? "border-primary-500 bg-primary-50"
-                : "border-neutral-200 hover:border-neutral-300"
-            }`}
-          >
-            <Smartphone
-              className={`h-5 w-5 ${paymentMode === "offline" ? "text-primary-600" : "text-neutral-400"}`}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-neutral-700">
+              Transaction ID / Reference Number
+            </label>
+            <input
+              type="text"
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              required
+              placeholder="e.g. BKash TrxID 8XF9JK..."
+              className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
             />
-            <div>
-              <p className="text-sm font-semibold text-neutral-900">Offline</p>
-              <p className="text-xs text-neutral-400">bKash / Nagad / Bank</p>
-            </div>
-          </button>
+            <p className="mt-1 text-xs text-neutral-400">
+              After sending, enter your transaction/reference number here.
+            </p>
+          </div>
+
+          <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
+            <Clock className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+            <p className="text-xs text-amber-700">
+              Admin will verify your payment and approve enrollment within 24 hours.
+              Paid partially? That&rsquo;s okay — enter what you&rsquo;ve sent and
+              we&rsquo;ll follow up on the remaining balance.
+            </p>
+          </div>
         </div>
-
-        {/* Online: dummy SSLCommerz */}
-        {paymentMode === "online" && (
-          <div className="mt-5 rounded-xl border border-dashed border-primary-200 bg-primary-50 p-5 text-center">
-            <CreditCard className="mx-auto h-8 w-8 text-primary-400" />
-            <p className="mt-2 text-sm font-medium text-primary-700">
-              SSLCommerz Payment Gateway
-            </p>
-            <p className="mt-1 text-xs text-primary-500">
-              (Demo mode — no real charge will be made)
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-1 text-xs text-neutral-500">
-              <Clock className="h-3.5 w-3.5" />
-              Admin approval required after payment
-            </div>
-          </div>
-        )}
-
-        {/* Offline: bKash / Nagad / Bank */}
-        {paymentMode === "offline" && (
-          <div className="mt-5 space-y-4">
-            <div className="grid grid-cols-3 gap-2">
-              {offlineMethods.map((m) => (
-                <button
-                  key={m.key}
-                  type="button"
-                  onClick={() => setOfflineMethod(m.key)}
-                  className={`rounded-xl border p-3 text-center transition ${
-                    offlineMethod === m.key
-                      ? "border-primary-500 bg-primary-50"
-                      : "border-neutral-200 hover:border-neutral-300 " + m.color
-                  }`}
-                >
-                  <p className="text-xs font-semibold text-neutral-800">{m.label}</p>
-                </button>
-              ))}
-            </div>
-
-            {offlineMethods
-              .filter((m) => m.key === offlineMethod)
-              .map((m) => (
-                <div
-                  key={m.key}
-                  className={`rounded-xl border p-4 ${m.color}`}
-                >
-                  <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
-                    Send BDT {course.price.toLocaleString("en-BD")} to
-                  </p>
-                  <p className="mt-1 text-base font-bold text-neutral-900">
-                    {m.account}
-                  </p>
-                  <p className="text-sm text-neutral-500">{m.type}</p>
-                </div>
-              ))}
-
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-neutral-700">
-                Transaction ID / Reference Number
-              </label>
-              <input
-                type="text"
-                value={reference}
-                onChange={(e) => setReference(e.target.value)}
-                required={paymentMode === "offline"}
-                placeholder="e.g. BKash TrxID 8XF9JK..."
-                className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-              />
-              <p className="mt-1 text-xs text-neutral-400">
-                After sending, enter your transaction/reference number here.
-              </p>
-            </div>
-
-            <div className="flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
-              <Clock className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-              <p className="text-xs text-amber-700">
-                Admin will verify your payment and approve enrollment within 24 hours.
-              </p>
-            </div>
-          </div>
-        )}
       </Card>
 
       {error && (
@@ -303,11 +186,7 @@ export function CheckoutClient({ course, existingEnrollment }: CheckoutClientPro
         disabled={submitting}
         className="flex w-full items-center justify-center gap-2 rounded-full bg-primary-700 py-4 text-base font-semibold text-white transition hover:bg-primary-800 disabled:opacity-60"
       >
-        {submitting
-          ? "Submitting…"
-          : paymentMode === "online"
-          ? "Pay with SSLCommerz"
-          : "Submit Enrollment"}
+        {submitting ? "Submitting…" : "Submit Enrollment"}
         <ArrowRight className="h-4 w-4" />
       </button>
     </form>

@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 import type { Metadata } from "next";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { prisma } from "@/lib/prisma";
@@ -12,7 +12,6 @@ export const metadata: Metadata = {
 export default async function CoursesPage() {
   const courses = await prisma.course.findMany({
     where: { isPublished: true },
-    include: { modules: { orderBy: { order: "asc" } } },
     orderBy: { createdAt: "asc" },
   });
 

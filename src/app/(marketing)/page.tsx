@@ -10,7 +10,6 @@ import {
   CheckCircle,
   User,
   GraduationCap,
-  BookOpen,
   Link2,
   Calendar,
   MonitorPlay,
@@ -19,36 +18,19 @@ import {
   Award,
   ArrowRight,
 } from "lucide-react";
-import type { ElementType } from "react";
 import Image from "next/image";
 import { Hero } from "@/components/marketing/Hero";
 import { StatsStrip } from "@/components/marketing/StatsStrip";
 import { BenefitsGrid } from "@/components/marketing/BenefitsGrid";
 import { TestimonialCarousel } from "@/components/marketing/TestimonialCarousel";
+import { CourseCard } from "@/components/marketing/CourseCard";
+import { EnrollButton } from "@/components/marketing/EnrollButton";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { LinkButton } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { instructors } from "@/lib/data/instructors";
-import { testimonials } from "@/lib/data/testimonials";
+import { prisma } from "@/lib/prisma";
 
-const fullCurriculumModules = [
-  "Introduction to Healthcare Data & AI",
-  "Basics of Healthcare Analytics",
-  "Excel / Google Sheets for Healthcare Data",
-  "Dashboard & Reporting for Healthcare",
-  "Healthcare KPI Analysis",
-  "AI Tools for Healthcare Professionals",
-  "Patient Data Analysis",
-  "Disease Trend Analysis",
-  "Predictive Insights Using No-Code Tools",
-  "Data Visualization in Healthcare",
-  "AI for Decision Making",
-  "Healthcare Automation Tools",
-  "Case Studies in Healthcare Analytics",
-  "Ethical Use of Healthcare Data",
-  "Mini Project / Practical Application",
-  "Final Assessment & Certificate",
-];
+export const revalidate = 60;
 
 const audienceGroups = [
   "Doctors",
@@ -147,32 +129,64 @@ const keyModules = [
   },
 ];
 
-const instructorMeta: Record<
-  string,
-  { badge: string; statIcon: ElementType; stat: string }
-> = {
-  "instr-gias": {
-    badge: "Chief Trainer",
-    statIcon: GraduationCap,
-    stat: "30+ Years Experience",
-  },
-  "instr-ahmed": {
-    badge: "Co-Instructor",
-    statIcon: BookOpen,
-    stat: "118+ Publications",
-  },
-};
+export default async function HomePage() {
+  const [featuredInstructors, featuredReviews, featuredCourses] = await Promise.all([
+    prisma.instructor.findMany({
+      where: { isPublished: true, isFeatured: true },
+      orderBy: { order: "asc" },
+    }),
+    prisma.review.findMany({
+      where: { isPublished: true, isFeatured: true },
+      orderBy: { order: "asc" },
+    }),
+    prisma.course.findMany({
+      where: { isPublished: true, isFeatured: true },
+      include: { modules: { orderBy: { order: "asc" } } },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
-export default function HomePage() {
+  const primaryCourse = featuredCourses[0];
+
   return (
     <>
-      <Hero />
+      <Hero
+        instructors={featuredInstructors}
+        primaryCourse={primaryCourse ? { id: primaryCourse.id, slug: primaryCourse.slug } : null}
+      />
 
       <section className="mx-auto -mt-4 max-w-7xl px-6 lg:px-8">
         <FadeIn>
           <StatsStrip />
         </FadeIn>
       </section>
+
+      {/* Featured Courses */}
+      {featuredCourses.length > 0 && (
+        <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+          <FadeIn className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-primary-600">
+                Featured Courses
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
+                Start with our top picks
+              </h2>
+            </div>
+            <LinkButton href="/courses" variant="outline">
+              View All Courses
+              <ArrowRight className="h-4 w-4" />
+            </LinkButton>
+          </FadeIn>
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredCourses.map((course, i) => (
+              <FadeIn key={course.id} delay={i * 0.05}>
+                <CourseCard course={course} />
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Course Showcase */}
       <section className="bg-neutral-50 py-24">
@@ -242,13 +256,22 @@ export default function HomePage() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <LinkButton href="/course" size="lg">
+                <LinkButton
+                  href={primaryCourse ? `/courses/${primaryCourse.slug}` : "/courses"}
+                  size="lg"
+                >
                   View Full Course
                   <ArrowRight className="h-4 w-4" />
                 </LinkButton>
-                <LinkButton href="/course#enroll" variant="outline" size="lg">
-                  Enroll Now
-                </LinkButton>
+                {primaryCourse ? (
+                  <EnrollButton courseId={primaryCourse.id} variant="outline" size="lg">
+                    Enroll Now
+                  </EnrollButton>
+                ) : (
+                  <LinkButton href="/courses" variant="outline" size="lg">
+                    Browse Courses
+                  </LinkButton>
+                )}
               </div>
             </FadeIn>
 
@@ -288,34 +311,37 @@ export default function HomePage() {
       </section>
 
       {/* Full Curriculum */}
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
-        <FadeIn>
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-600">
-            Full Curriculum
-          </p>
-          <h2 className="mt-2 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
-            All 16 modules across 8 weeks
-          </h2>
-          <p className="mt-3 max-w-2xl text-neutral-500">
-            A complete walk-through of the proposed curriculum — from healthcare
-            data fundamentals to your final assessment and certificate.
-          </p>
-        </FadeIn>
-        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {fullCurriculumModules.map((title, i) => (
-            <FadeIn key={i} delay={i * 0.03}>
-              <Card className="flex items-center gap-4 px-5 py-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="text-sm font-medium text-neutral-800">
-                  {title}
-                </span>
-              </Card>
-            </FadeIn>
-          ))}
-        </div>
-      </section>
+      {primaryCourse && primaryCourse.modules.length > 0 && (
+        <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+          <FadeIn>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary-600">
+              Full Curriculum
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
+              All {primaryCourse.modules.length} modules across{" "}
+              {Math.ceil(primaryCourse.modules.length / 2)} weeks
+            </h2>
+            <p className="mt-3 max-w-2xl text-neutral-500">
+              A complete walk-through of the proposed curriculum — from healthcare
+              data fundamentals to your final assessment and certificate.
+            </p>
+          </FadeIn>
+          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {primaryCourse.modules.map((mod, i) => (
+              <FadeIn key={mod.id} delay={i * 0.03}>
+                <Card className="flex items-center gap-4 px-5 py-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+                    {String(mod.order).padStart(2, "0")}
+                  </span>
+                  <span className="flex-1 text-sm font-medium text-neutral-800">
+                    {mod.title}
+                  </span>
+                </Card>
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Who is this for / Course Objectives */}
       <section className="bg-neutral-50 py-24">
@@ -429,26 +455,24 @@ export default function HomePage() {
       </section>
 
       {/* Instructors */}
-      <section id="instructors" className="bg-neutral-50 py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <FadeIn className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary-600">
-              Meet Your Trainers
-            </p>
-            <h2 className="mt-2 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
-              World-class expertise, built for healthcare
-            </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-neutral-500">
-              Your course is led by two of the region&rsquo;s foremost
-              authorities in healthcare data, AI, and public health research.
-            </p>
-          </FadeIn>
+      {featuredInstructors.length > 0 && (
+        <section id="instructors" className="bg-neutral-50 py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <FadeIn className="text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest text-primary-600">
+                Meet Your Trainers
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
+                World-class expertise, built for healthcare
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-neutral-500">
+                Your course is led by the region&rsquo;s foremost authorities
+                in healthcare data, AI, and public health research.
+              </p>
+            </FadeIn>
 
-          <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {instructors.map((instructor, i) => {
-              const meta = instructorMeta[instructor.id];
-              const StatIcon = meta.statIcon;
-              return (
+            <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {featuredInstructors.map((instructor, i) => (
                 <FadeIn key={instructor.id} delay={i * 0.1}>
                   <Card className="flex flex-col gap-0 overflow-hidden">
                     {/* Top gradient band */}
@@ -457,19 +481,27 @@ export default function HomePage() {
                     <div className="flex flex-col items-center gap-5 px-8 pb-8 pt-10 text-center sm:flex-row sm:items-start sm:text-left">
                       {/* Avatar */}
                       <div className="relative shrink-0">
-                        <div className="h-28 w-28 overflow-hidden rounded-full ring-4 ring-primary-100 ring-offset-2">
-                          <Image
-                            src={instructor.avatar}
-                            alt={instructor.name}
-                            width={112}
-                            height={112}
-                            className="h-full w-full object-cover"
-                          />
+                        <div className="h-28 w-28 overflow-hidden rounded-full bg-neutral-100 ring-4 ring-primary-100 ring-offset-2">
+                          {instructor.avatar ? (
+                            <Image
+                              src={instructor.avatar}
+                              alt={instructor.name}
+                              width={112}
+                              height={112}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-neutral-300">
+                              <User className="h-10 w-10" />
+                            </div>
+                          )}
                         </div>
                         {/* Role badge pinned to bottom of avatar */}
-                        <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary-700 px-3 py-1 text-xs font-semibold text-white shadow">
-                          {meta.badge}
-                        </span>
+                        {instructor.badge && (
+                          <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary-700 px-3 py-1 text-xs font-semibold text-white shadow">
+                            {instructor.badge}
+                          </span>
+                        )}
                       </div>
 
                       {/* Info */}
@@ -482,18 +514,20 @@ export default function HomePage() {
                         </p>
 
                         {/* Stat chip */}
-                        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
-                          <StatIcon className="h-3.5 w-3.5" />
-                          {meta.stat}
-                        </div>
+                        {instructor.statLabel && (
+                          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700">
+                            <GraduationCap className="h-3.5 w-3.5" />
+                            {instructor.statLabel}
+                          </div>
+                        )}
 
                         <p className="mt-4 text-sm leading-relaxed text-neutral-500">
                           {instructor.bio}
                         </p>
 
-                        {instructor.socials.linkedin && (
+                        {instructor.linkedinUrl && (
                           <a
-                            href={instructor.socials.linkedin}
+                            href={instructor.linkedinUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-primary-600 hover:text-primary-800"
@@ -506,28 +540,43 @@ export default function HomePage() {
                     </div>
                   </Card>
                 </FadeIn>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+              ))}
+            </div>
 
-      <section
-        id="testimonials"
-        className="mx-auto max-w-7xl px-6 py-24 lg:px-8"
-      >
-        <FadeIn className="mx-auto max-w-2xl text-center">
-          <h2 className="font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
-            Loved by learners worldwide
-          </h2>
-          <p className="mt-3 text-neutral-500">
-            Real stories from people who changed their careers with us.
-          </p>
-        </FadeIn>
-        <div className="mt-12">
-          <TestimonialCarousel testimonials={testimonials} />
-        </div>
-      </section>
+            <div className="mt-10 text-center">
+              <LinkButton href="/instructors" variant="outline">
+                View All Instructors
+                <ArrowRight className="h-4 w-4" />
+              </LinkButton>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {featuredReviews.length > 0 && (
+        <section
+          id="testimonials"
+          className="mx-auto max-w-7xl px-6 py-24 lg:px-8"
+        >
+          <FadeIn className="mx-auto max-w-2xl text-center">
+            <h2 className="font-display text-3xl font-bold text-neutral-900 sm:text-4xl">
+              Loved by learners worldwide
+            </h2>
+            <p className="mt-3 text-neutral-500">
+              Real stories from people who changed their careers with us.
+            </p>
+          </FadeIn>
+          <div className="mt-12">
+            <TestimonialCarousel testimonials={featuredReviews} />
+          </div>
+          <div className="mt-8 text-center">
+            <LinkButton href="/reviews" variant="outline">
+              View All Reviews
+              <ArrowRight className="h-4 w-4" />
+            </LinkButton>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
         <FadeIn className="relative overflow-hidden rounded-[2.5rem] bg-linear-to-br from-primary-700 via-primary-600 to-accent-500 px-8 py-16 text-center sm:px-16">
@@ -539,11 +588,17 @@ export default function HomePage() {
             analytics. No coding. No prior experience. Just results.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <LinkButton href="/course#enroll" variant="secondary" size="lg">
-              Enroll Now — BDT 8,000
-            </LinkButton>
+            {primaryCourse ? (
+              <EnrollButton courseId={primaryCourse.id} variant="secondary" size="lg">
+                Enroll Now — BDT 8,000
+              </EnrollButton>
+            ) : (
+              <LinkButton href="/courses" variant="secondary" size="lg">
+                Browse Courses
+              </LinkButton>
+            )}
             <LinkButton
-              href="/course"
+              href={primaryCourse ? `/courses/${primaryCourse.slug}` : "/courses"}
               variant="outline"
               size="lg"
               className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary-700"

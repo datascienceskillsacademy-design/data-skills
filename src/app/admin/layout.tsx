@@ -1,15 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { GraduationCap, LayoutDashboard, BookOpen, Users, ClipboardList } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const navLinks = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/courses", label: "Courses", icon: BookOpen },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/enrollments", label: "Enrollments", icon: ClipboardList },
-];
+import { AdminSidebarNav } from "./AdminSidebarNav";
 
 export default async function AdminLayout({
   children,
@@ -35,21 +29,7 @@ export default async function AdminLayout({
           {/* <ThemeToggle /> */}
         </div>
 
-        <nav className="flex-1 p-4">
-          <ul className="space-y-1">
-            {navLinks.map(({ href, label, icon: Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <AdminSidebarNav />
 
         <div className="border-t border-neutral-200 p-4 dark:border-neutral-800">
           <Link

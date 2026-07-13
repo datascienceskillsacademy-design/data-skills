@@ -52,9 +52,16 @@ export default async function AdminCoursesPage() {
                   {course._count.enrollments}
                 </td>
                 <td className="px-5 py-3">
-                  <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${course.isPublished ? "bg-green-100 text-green-700" : "bg-neutral-100 text-neutral-600"}`}>
-                    {course.isPublished ? "Published" : "Draft"}
-                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${course.isPublished ? "bg-green-100 text-green-700" : "bg-neutral-100 text-neutral-600"}`}>
+                      {course.isPublished ? "Published" : "Draft"}
+                    </span>
+                    {course.isFeatured && (
+                      <span className="inline-flex rounded-full bg-accent-100 px-2.5 py-0.5 text-xs font-semibold text-accent-700">
+                        Featured
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-5 py-3">
                   <CourseRowActions course={course} />

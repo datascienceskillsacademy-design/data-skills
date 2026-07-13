@@ -10,11 +10,15 @@ import {
   MessageCircle,
   Video,
   CheckCircle,
+  Circle,
   Clock,
   XCircle,
   Award,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { WhatsAppFloatButton } from "@/components/profile/WhatsAppFloatButton";
+import { ClassScheduleSection } from "@/components/profile/ClassScheduleSection";
+import { PaymentDueBanner } from "@/components/profile/PaymentDueBanner";
 
 const statusConfig = {
   PENDING: { label: "Pending Review", icon: Clock, color: "text-amber-600 bg-amber-50 border-amber-200" },
@@ -33,9 +37,11 @@ export default async function ProfilePage() {
       enrollments: {
         include: {
           course: {
-            include: { modules: { orderBy: { order: "asc" } } },
+            include: {
+              modules: { orderBy: { order: "asc" } },
+              classSchedules: { orderBy: { startsAt: "asc" } },
+            },
           },
-          progresses: true,
         },
         orderBy: { enrolledAt: "desc" },
       },
@@ -44,8 +50,19 @@ export default async function ProfilePage() {
 
   if (!user) redirect("/login");
 
+  const hasEnrollments = user.enrollments.length > 0;
+  const enrolledCourseTitles = user.enrollments.map((e) => e.course.title);
+
   return (
     <div className="min-h-screen bg-neutral-50">
+      {hasEnrollments && (
+        <WhatsAppFloatButton
+          name={user.name ?? "Student"}
+          email={user.email}
+          courseTitles={enrolledCourseTitles}
+        />
+      )}
+
       <div className="mx-auto max-w-5xl px-6 py-16 lg:px-8">
         {/* Profile header */}
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
@@ -123,7 +140,9 @@ export default async function ProfilePage() {
               const config = statusConfig[enrollment.status];
               const StatusIcon = config.icon;
               const totalModules = enrollment.course.modules.length;
-              const completedModules = enrollment.progresses.length;
+              const completedModules = enrollment.course.modules.filter(
+                (m) => m.isCompleted
+              ).length;
               const progress =
                 totalModules > 0
                   ? Math.round((completedModules / totalModules) * 100)
@@ -146,6 +165,17 @@ export default async function ProfilePage() {
                         </span>
                       </div>
 
+                      {/* Payment due — only when admin recorded a partial payment */}
+                      {isApproved && enrollment.amountPaid != null && (
+                        <PaymentDueBanner
+                          name={user.name ?? "Student"}
+                          email={user.email}
+                          courseTitle={enrollment.course.title}
+                          coursePrice={enrollment.course.price}
+                          amountPaid={enrollment.amountPaid}
+                        />
+                      )}
+
                       {/* Progress bar */}
                       {isApproved && (
                         <div className="mt-4">
@@ -162,6 +192,38 @@ export default async function ProfilePage() {
                           <p className="mt-1 text-xs text-neutral-400">
                             {completedModules} / {totalModules} modules completed
                           </p>
+                        </div>
+                      )}
+
+                      {/* Class schedule — upcoming & past live classes */}
+                      {isApproved && (
+                        <ClassScheduleSection classes={enrollment.course.classSchedules} />
+                      )}
+
+                      {/* Module checklist — which modules are done vs not */}
+                      {isApproved && totalModules > 0 && (
+                        <div className="mt-5 border-t border-neutral-100 pt-4">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                            Course Modules
+                          </p>
+                          <ul className="mt-2.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+                            {enrollment.course.modules.map((mod) => (
+                              <li key={mod.id} className="flex items-center gap-2">
+                                {mod.isCompleted ? (
+                                  <CheckCircle className="h-4 w-4 shrink-0 text-green-600" />
+                                ) : (
+                                  <Circle className="h-4 w-4 shrink-0 text-neutral-300" />
+                                )}
+                                <span
+                                  className={`text-sm ${
+                                    mod.isCompleted ? "text-neutral-700" : "text-neutral-400"
+                                  }`}
+                                >
+                                  {mod.title}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       )}
 

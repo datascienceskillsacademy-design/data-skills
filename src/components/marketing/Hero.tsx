@@ -1,48 +1,25 @@
 "use client";
 
-import type { ElementType } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  BookOpen,
-  CalendarDays,
-  GraduationCap,
-  MonitorPlay,
-  Tag,
-} from "lucide-react";
+import { ArrowRight, CalendarDays, MonitorPlay, Tag, User } from "lucide-react";
 import { LinkButton } from "@/components/ui/Button";
-import { instructors } from "@/lib/data/instructors";
+import { EnrollButton } from "@/components/marketing/EnrollButton";
+import type { Instructor } from "@/generated/prisma/client";
 
-const instructorMeta: Record<
-  string,
-  { badge: string; StatIcon: ElementType; stat: string; credential: string }
-> = {
-  "instr-gias": {
-    badge: "Chief Trainer",
-    StatIcon: GraduationCap,
-    stat: "30+ Years Experience",
-    credential:
-      "Former Pro Vice Chancellor, NSU · WHO South-East Asia Technical Advisor · Research partnerships with Johns Hopkins, Oxford & Cambridge",
-  },
-  "instr-ahmed": {
-    badge: "Co-Instructor",
-    StatIcon: BookOpen,
-    stat: "118+ Publications",
-    credential:
-      "Professor of Healthcare Management, University of Sharjah · PhD, University of Toronto · Published in The Lancet & JAMA",
-  },
-};
+interface HeroProps {
+  instructors: Instructor[];
+  primaryCourse: { id: string; slug: string } | null;
+}
 
-export function Hero() {
+export function Hero({ instructors, primaryCourse }: HeroProps) {
+  const [first, second] = instructors;
+
   return (
     <section className="overflow-hidden bg-white">
-      {/* ── Top: centered copy ── */}
-      <div className="relative bg-linear-to-b from-primary-50 via-primary-50/40 to-white px-6 pb-16 pt-20 text-center lg:pt-28">
-        <div className="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-primary-200/30 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-accent-200/25 blur-3xl" />
-
-        <div className="relative mx-auto max-w-3xl">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-6 py-20 lg:grid-cols-2 lg:gap-8 lg:py-28 lg:px-8">
+        {/* ── Left: copy ── */}
+        <div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -69,7 +46,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-neutral-500"
+            className="mt-5 max-w-xl text-lg leading-relaxed text-neutral-500"
           >
             An 8-week live online programme for doctors, nurses &amp; healthcare
             managers — no prior coding or data experience needed.
@@ -79,7 +56,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.28 }}
-            className="mt-7 flex flex-wrap justify-center gap-x-7 gap-y-2.5 text-sm text-neutral-500"
+            className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5 text-sm text-neutral-500"
           >
             {[
               { icon: CalendarDays, label: "2 Months · 16 Live Sessions" },
@@ -97,76 +74,88 @@ export function Hero() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.36 }}
-            className="mt-8 flex flex-wrap justify-center gap-3"
+            className="mt-8 flex flex-wrap gap-3"
           >
-            <LinkButton href="/course#enroll" size="lg">
-              Enroll Now — BDT 8,000
-              <ArrowRight className="h-4 w-4" />
-            </LinkButton>
-            <LinkButton href="/course" variant="outline" size="lg">
+            {primaryCourse ? (
+              <EnrollButton courseId={primaryCourse.id} size="lg">
+                Enroll Now — BDT 8,000
+                <ArrowRight className="h-4 w-4" />
+              </EnrollButton>
+            ) : (
+              <LinkButton href="/courses" size="lg">
+                Browse Courses
+                <ArrowRight className="h-4 w-4" />
+              </LinkButton>
+            )}
+            <LinkButton
+              href={primaryCourse ? `/courses/${primaryCourse.slug}` : "/courses"}
+              variant="outline"
+              size="lg"
+            >
               View Full Course
             </LinkButton>
           </motion.div>
         </div>
-      </div>
 
-      {/* ── Bottom: two equal instructor panels ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="grid grid-cols-1 border-t border-neutral-100 sm:grid-cols-2"
-      >
-        {instructors.map((instructor, i) => {
-          const meta = instructorMeta[instructor.id];
-          return (
-            <div
-              key={instructor.id}
-              className="relative flex flex-col items-center bg-white px-8 py-14 text-center sm:px-10"
-            >
-              {/* Divider between panels */}
-              {i === 0 && (
-                <div className="absolute inset-y-0 right-0 hidden w-px bg-neutral-100 sm:block" />
-              )}
+        {/* ── Right: featured instructors ── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mx-auto aspect-square w-full max-w-lg"
+        >
+          {/* Dotted grid backdrop */}
+          <div
+            className="absolute inset-0 rounded-4xl bg-neutral-50"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgb(0 0 0 / 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgb(0 0 0 / 0.06) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
 
-              {/* Photo */}
-              <div className="h-36 w-36 overflow-hidden rounded-full ring-4 ring-primary-100 ring-offset-4 ring-offset-white">
+          {/* Gradient blob */}
+          <div className="absolute right-[4%] top-1/2 h-[78%] w-[78%] -translate-y-1/2 rounded-full bg-linear-to-br from-primary-700 via-primary-500 to-accent-400" />
+
+          {/* Instructor photo 1 */}
+          {first && (
+            <div className="absolute left-[6%] top-[10%] aspect-3/4 w-[55%] overflow-hidden rounded-2xl bg-neutral-100 shadow-2xl shadow-primary-900/20 ring-4 ring-white">
+              {first.avatar ? (
                 <Image
-                  src={instructor.avatar}
-                  alt={instructor.name}
-                  width={144}
-                  height={144}
+                  src={first.avatar}
+                  alt={first.name}
+                  width={320}
+                  height={420}
                   className="h-full w-full object-cover"
                 />
-              </div>
-
-              {/* Badge + stat */}
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                <span className="rounded-full bg-primary-600 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
-                  {meta.badge}
-                </span>
-                <span className="flex items-center gap-1.5 text-[11px] font-semibold text-primary-600">
-                  <meta.StatIcon className="h-3.5 w-3.5" />
-                  {meta.stat}
-                </span>
-              </div>
-
-              {/* Name & role */}
-              <h2 className="mt-4 font-display text-2xl font-bold leading-snug text-neutral-900">
-                {instructor.name}
-              </h2>
-              <p className="mt-1 text-sm font-medium text-neutral-400">
-                {instructor.role}
-              </p>
-
-              {/* Credential */}
-              <p className="mt-5 max-w-xs text-sm leading-relaxed text-neutral-500">
-                {meta.credential}
-              </p>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-neutral-300">
+                  <User className="h-12 w-12" />
+                </div>
+              )}
             </div>
-          );
-        })}
-      </motion.div>
+          )}
+
+          {/* Instructor photo 2 */}
+          {second && (
+            <div className="absolute bottom-[8%] right-[4%] aspect-3/4 w-[48%] overflow-hidden rounded-2xl bg-neutral-100 shadow-2xl shadow-primary-900/20 ring-4 ring-white">
+              {second.avatar ? (
+                <Image
+                  src={second.avatar}
+                  alt={second.name}
+                  width={280}
+                  height={370}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-neutral-300">
+                  <User className="h-10 w-10" />
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
+      </div>
     </section>
   );
 }

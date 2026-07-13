@@ -4,6 +4,7 @@ import { cloudinary } from "@/lib/cloudinary";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+const ALLOWED_FOLDERS = ["courses", "instructors", "reviews"];
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -13,6 +14,10 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData();
   const file = formData.get("file");
+  const folderInput = formData.get("folder");
+  const folder = ALLOWED_FOLDERS.includes(String(folderInput))
+    ? String(folderInput)
+    : "courses";
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -34,7 +39,7 @@ export async function POST(request: NextRequest) {
     const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
 
     const result = await cloudinary.uploader.upload(dataUri, {
-      folder: "dataskills/courses",
+      folder: `dataskills/${folder}`,
       resource_type: "image",
     });
 

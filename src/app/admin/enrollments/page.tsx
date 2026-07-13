@@ -1,14 +1,14 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
-import { EnrollmentStatusSelect } from "./EnrollmentStatusSelect";
+import { EnrollmentAdminControls } from "./EnrollmentAdminControls";
 
 export default async function AdminEnrollmentsPage() {
   const enrollments = await prisma.enrollment.findMany({
     orderBy: { enrolledAt: "desc" },
     include: {
       user: { select: { name: true, email: true } },
-      course: { select: { title: true } },
+      course: { select: { title: true, price: true } },
     },
   });
 
@@ -60,9 +60,11 @@ export default async function AdminEnrollmentsPage() {
                   {new Date(e.enrolledAt).toLocaleDateString()}
                 </td>
                 <td className="px-5 py-3">
-                  <EnrollmentStatusSelect
+                  <EnrollmentAdminControls
                     enrollmentId={e.id}
                     currentStatus={e.status}
+                    coursePrice={e.course.price}
+                    initialAmountPaid={e.amountPaid}
                   />
                 </td>
               </tr>

@@ -14,29 +14,24 @@ import {
   BookOpen,
   ClipboardList,
   ArrowRight,
+  GraduationCap,
+  User as UserIcon,
 } from "lucide-react";
 import type { ElementType } from "react";
 import { FadeIn } from "@/components/motion/FadeIn";
 import { Card } from "@/components/ui/Card";
+import { EnrollButton } from "@/components/marketing/EnrollButton";
 import { prisma } from "@/lib/prisma";
-import { instructors } from "@/lib/data/instructors";
-import Link from "next/link";
 
-const instructorMeta: Record<
-  string,
-  { badge: string; statIcon: ElementType; stat: string }
-> = {
-  "instr-gias": {
-    badge: "Chief Trainer",
-    statIcon: BookOpen,
-    stat: "30+ Years Experience",
-  },
-  "instr-ahmed": {
-    badge: "Co-Instructor",
-    statIcon: BookOpen,
-    stat: "118+ Publications",
-  },
-};
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const courses = await prisma.course.findMany({
+    where: { isPublished: true },
+    select: { slug: true },
+  });
+  return courses.map((course) => ({ slug: course.slug }));
+}
 
 const features: { icon: ElementType; title: string; desc: string }[] = [
   {
@@ -92,6 +87,11 @@ export default async function CourseDetailPage({ params }: Props) {
 
   if (!course) notFound();
 
+  const featuredInstructors = await prisma.instructor.findMany({
+    where: { isPublished: true, isFeatured: true },
+    orderBy: { order: "asc" },
+  });
+
   const placeholder =
     "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=900&auto=format&fit=crop";
 
@@ -143,13 +143,10 @@ export default async function CourseDetailPage({ params }: Props) {
               </div>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
-                  href="#enroll"
-                  className="inline-flex items-center gap-2 rounded-full bg-accent-400 px-7 py-3.5 text-base font-semibold text-[#100c1f] transition-all hover:bg-accent-500 active:scale-[0.98]"
-                >
+                <EnrollButton courseId={course.id} variant="secondary" size="lg">
                   Enroll Now — BDT {course.price.toLocaleString("en-BD")}
                   <ArrowRight className="h-4 w-4" />
-                </a>
+                </EnrollButton>
                 <a
                   href="#curriculum"
                   className="inline-flex items-center gap-2 rounded-full border border-primary-400/50 px-7 py-3.5 text-base font-medium text-white transition-all hover:border-white active:scale-[0.98]"
@@ -238,7 +235,7 @@ export default async function CourseDetailPage({ params }: Props) {
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
                         {String(mod.order).padStart(2, "0")}
                       </span>
-                      <span className="text-sm font-medium text-neutral-800">
+                      <span className="flex-1 text-sm font-medium text-neutral-800">
                         {mod.title}
                       </span>
                     </Card>
@@ -271,6 +268,7 @@ export default async function CourseDetailPage({ params }: Props) {
             </FadeIn>
 
             {/* Instructors */}
+            {featuredInstructors.length > 0 && (
             <FadeIn>
               <p className="text-xs font-semibold uppercase tracking-widest text-primary-600">
                 Your Trainers
@@ -279,14 +277,11 @@ export default async function CourseDetailPage({ params }: Props) {
                 World-class expertise
               </h2>
               <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-                {instructors.map((instructor) => {
-                  const meta = instructorMeta[instructor.id];
-                  if (!meta) return null;
-                  const StatIcon = meta.statIcon;
-                  return (
-                    <Card key={instructor.id} className="flex gap-4 p-6">
-                      <div className="relative shrink-0">
-                        <div className="h-16 w-16 overflow-hidden rounded-full ring-4 ring-primary-100 ring-offset-1">
+                {featuredInstructors.map((instructor) => (
+                  <Card key={instructor.id} className="flex gap-4 p-6">
+                    <div className="relative shrink-0">
+                      <div className="h-16 w-16 overflow-hidden rounded-full bg-neutral-100 ring-4 ring-primary-100 ring-offset-1">
+                        {instructor.avatar ? (
                           <Image
                             src={instructor.avatar}
                             alt={instructor.name}
@@ -294,28 +289,37 @@ export default async function CourseDetailPage({ params }: Props) {
                             height={64}
                             className="h-full w-full object-cover"
                           />
-                        </div>
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-neutral-300">
+                            <UserIcon className="h-6 w-6" />
+                          </div>
+                        )}
                       </div>
-                      <div className="min-w-0">
+                    </div>
+                    <div className="min-w-0">
+                      {instructor.badge && (
                         <span className="inline-block rounded-full bg-primary-700 px-2.5 py-0.5 text-xs font-semibold text-white">
-                          {meta.badge}
+                          {instructor.badge}
                         </span>
-                        <h3 className="mt-1 font-display text-base font-bold text-neutral-900">
-                          {instructor.name}
-                        </h3>
-                        <p className="text-xs font-medium text-primary-600">
-                          {instructor.role}
-                        </p>
+                      )}
+                      <h3 className="mt-1 font-display text-base font-bold text-neutral-900">
+                        {instructor.name}
+                      </h3>
+                      <p className="text-xs font-medium text-primary-600">
+                        {instructor.role}
+                      </p>
+                      {instructor.statLabel && (
                         <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700">
-                          <StatIcon className="h-3 w-3" />
-                          {meta.stat}
+                          <GraduationCap className="h-3 w-3" />
+                          {instructor.statLabel}
                         </div>
-                      </div>
-                    </Card>
-                  );
-                })}
+                      )}
+                    </div>
+                  </Card>
+                ))}
               </div>
             </FadeIn>
+            )}
           </div>
 
           {/* ── Sticky enroll sidebar ── */}
@@ -353,13 +357,14 @@ export default async function CourseDetailPage({ params }: Props) {
                     ))}
                   </ul>
 
-                  <Link
-                    href={`/checkout/${course.id}`}
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-primary-700 px-6 py-3.5 text-base font-semibold text-white transition-colors hover:bg-primary-800"
+                  <EnrollButton
+                    courseId={course.id}
+                    size="lg"
+                    className="mt-4 w-full transition-colors"
                   >
                     Enroll Now
                     <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  </EnrollButton>
                   <p className="text-center text-xs text-neutral-400">
                     Seats are limited to {course.batchSize} per batch
                   </p>

@@ -7,7 +7,7 @@ const columns = [
     title: "Learn",
     links: [
       { href: "/courses", label: "All Courses" },
-      { href: "/#instructors", label: "Instructors" },
+      { href: "/instructors", label: "Instructors" },
       { href: "/login", label: "Student Login" },
     ],
   },
@@ -15,7 +15,7 @@ const columns = [
     title: "Company",
     links: [
       { href: "/#founder", label: "About" },
-      { href: "/#testimonials", label: "Reviews" },
+      { href: "/reviews", label: "Reviews" },
       { href: "/courses", label: "Pricing" },
     ],
   },

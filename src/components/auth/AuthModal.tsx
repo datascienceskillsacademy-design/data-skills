@@ -9,10 +9,13 @@ interface AuthModalProps {
   open: boolean;
   onClose: () => void;
   defaultTab?: "signin" | "signup";
+  /** Called after a successful sign-in or sign-up (the user is authenticated by then). Defaults to onClose. */
+  onSuccess?: () => void;
 }
 
-export function AuthModal({ open, onClose, defaultTab = "signin" }: AuthModalProps) {
+export function AuthModal({ open, onClose, defaultTab = "signin", onSuccess }: AuthModalProps) {
   const [tab, setTab] = useState<"signin" | "signup">(defaultTab);
+  const handleSuccess = onSuccess ?? onClose;
 
   useEffect(() => {
     setTab(defaultTab);
@@ -62,9 +65,9 @@ export function AuthModal({ open, onClose, defaultTab = "signin" }: AuthModalPro
           </div>
 
           {tab === "signin" ? (
-            <SignInForm onSuccess={onClose} />
+            <SignInForm onSuccess={handleSuccess} />
           ) : (
-            <SignUpForm onSuccess={() => setTab("signin")} />
+            <SignUpForm onSuccess={handleSuccess} />
           )}
         </div>
       </div>

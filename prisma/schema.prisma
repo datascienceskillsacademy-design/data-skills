@@ -85,23 +85,76 @@ model Course {
   whatsappLink  String?
   meetLink      String?
   isPublished   Boolean  @default(false)
+  isFeatured    Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  modules     CourseModule[]
-  enrollments Enrollment[]
+  modules        CourseModule[]
+  enrollments    Enrollment[]
+  classSchedules ClassSchedule[]
 }
 
 model CourseModule {
-  id       String @id @default(cuid())
-  courseId String
-  title    String
-  order    Int
+  id          String  @id @default(cuid())
+  courseId    String
+  title       String
+  order       Int
+  isCompleted Boolean @default(false)
 
-  course     Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  progresses Progress[]
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([courseId, order])
+}
+
+model ClassSchedule {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  startsAt  DateTime
+  endsAt    DateTime
+  meetLink  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, startsAt])
+}
+
+// ─── Instructors & Reviews ───────────────────────────────────────────────────
+
+model Instructor {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  bio         String
+  avatar      String?
+  badge       String?
+  statLabel   String?
+  linkedinUrl String?
+  twitterUrl  String?
+  githubUrl   String?
+  isFounder   Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  authorName  String
+  authorRole  String
+  avatar      String?
+  quote       String
+  rating      Int      @default(5)
+  isFeatured  Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ─── Enrollment ──────────────────────────────────────────────────────────────
@@ -115,26 +168,14 @@ model Enrollment {
   transactionId        String?
   offlinePaymentMethod String?
   offlineReference     String?
+  amountPaid           Int?
   enrolledAt           DateTime         @default(now())
   approvedAt           DateTime?
 
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course     Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  progresses Progress[]
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
-}
-
-model Progress {
-  id           String   @id @default(cuid())
-  enrollmentId String
-  moduleId     String
-  completedAt  DateTime @default(now())
-
-  enrollment Enrollment   @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  module     CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-
-  @@unique([enrollmentId, moduleId])
 }
 
 // ─── Enums ───────────────────────────────────────────────────────────────────

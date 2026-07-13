@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, MonitorPlay, Users } from "lucide-react";
 import { Card } from "@/components/ui/Card";
+import { EnrollButton } from "@/components/marketing/EnrollButton";
 import type { Course } from "@/generated/prisma/client";
 
 export function CourseCard({ course }: { course: Course }) {
@@ -9,8 +10,8 @@ export function CourseCard({ course }: { course: Course }) {
     "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1200&auto=format&fit=crop";
 
   return (
-    <Link href={`/courses/${course.slug}`} className="group block h-full">
-      <Card className="flex h-full flex-col overflow-hidden transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:shadow-primary-900/10">
+    <Card className="group flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-900/10">
+      <Link href={`/courses/${course.slug}`} className="flex flex-1 flex-col">
         <div className="relative aspect-video w-full overflow-hidden">
           <Image
             src={course.thumbnail ?? placeholder}
@@ -25,7 +26,7 @@ export function CourseCard({ course }: { course: Course }) {
           </span>
         </div>
 
-        <div className="flex flex-1 flex-col gap-3 p-5">
+        <div className="flex flex-1 flex-col gap-3 p-5 pb-0">
           <span className="text-xs font-semibold uppercase tracking-wider text-primary-600">
             {course.category}
           </span>
@@ -53,17 +54,18 @@ export function CourseCard({ course }: { course: Course }) {
               {course.batchSize} Students
             </span>
           </div>
-
-          <div className="flex items-center justify-between border-t border-neutral-100 pt-4">
-            <span className="font-display text-lg font-bold text-primary-700">
-              BDT {course.price.toLocaleString("en-BD")}
-            </span>
-            <span className="rounded-full bg-primary-700 px-4 py-1.5 text-xs font-semibold text-white">
-              Enroll Now
-            </span>
-          </div>
         </div>
-      </Card>
-    </Link>
+      </Link>
+
+      {/* Kept outside the Link — a button can't be validly nested inside an anchor */}
+      <div className="flex items-center justify-between border-t border-neutral-100 p-5 pt-4">
+        <span className="font-display text-lg font-bold text-primary-700">
+          BDT {course.price.toLocaleString("en-BD")}
+        </span>
+        <EnrollButton courseId={course.id} size="sm">
+          Enroll Now
+        </EnrollButton>
+      </div>
+    </Card>
   );
 }

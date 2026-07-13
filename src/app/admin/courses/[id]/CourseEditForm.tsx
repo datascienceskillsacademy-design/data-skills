@@ -32,6 +32,7 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
     whatsappLink: course?.whatsappLink ?? "",
     meetLink: course?.meetLink ?? "",
     isPublished: course?.isPublished ?? false,
+    isFeatured: course?.isFeatured ?? false,
   });
 
   const [saving, setSaving] = useState(false);
@@ -288,7 +289,7 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
         </div>
       </Card>
 
-      <Card className="p-6">
+      <Card className="space-y-4 p-6">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -299,6 +300,18 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
           />
           <span className="text-sm font-medium text-neutral-700">
             Publish this course (visible to students)
+          </span>
+        </label>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            name="isFeatured"
+            checked={form.isFeatured}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-neutral-300 text-primary-600"
+          />
+          <span className="text-sm font-medium text-neutral-700">
+            Feature this course on the home page
           </span>
         </label>
       </Card>

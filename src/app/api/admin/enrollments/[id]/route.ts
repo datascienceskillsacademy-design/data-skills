@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const schema = z.object({
-  status: z.enum(["PENDING", "APPROVED", "REJECTED", "COMPLETED"]),
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "COMPLETED"]).optional(),
+  amountPaid: z.number().int().min(0).optional(),
 });
 
 export async function PATCH(
@@ -20,12 +21,13 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { status } = schema.parse(body);
+    const { status, amountPaid } = schema.parse(body);
 
     const enrollment = await prisma.enrollment.update({
       where: { id },
       data: {
         status,
+        amountPaid,
         approvedAt: status === "APPROVED" ? new Date() : undefined,
       },
     });

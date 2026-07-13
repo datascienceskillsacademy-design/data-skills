@@ -3,19 +3,26 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, LayoutDashboard, LogOut, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { LinkButton } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { cn } from "@/lib/cn";
 
 const links = [
   { href: "/", label: "Home" },
   { href: "/courses", label: "Courses" },
-  { href: "/#instructors", label: "Instructors" },
-  { href: "/#testimonials", label: "Reviews" },
+  { href: "/instructors", label: "Instructors" },
+  { href: "/reviews", label: "Reviews" },
 ];
+
+function isLinkActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -23,6 +30,7 @@ export function Navbar() {
   const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { data: session } = useSession();
+  const pathname = usePathname();
 
   function openSignIn() {
     setAuthTab("signin");
@@ -50,15 +58,21 @@ export function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-neutral-600 transition-colors hover:text-primary-700"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {links.map((link) => {
+              const active = isLinkActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary-700",
+                    active ? "text-primary-700" : "text-neutral-600"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Desktop auth */}
@@ -167,16 +181,24 @@ export function Navbar() {
               className="overflow-hidden border-t border-neutral-200/70 bg-white md:hidden dark:border-neutral-800 dark:bg-neutral-950"
             >
               <div className="flex flex-col gap-1 px-6 py-4">
-                {links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {links.map((link) => {
+                  const active = isLinkActive(pathname, link.href);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        active
+                          ? "bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300"
+                          : "text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
                 {session?.user ? (
                   <div className="mt-2 flex flex-col gap-2 px-3">
                     <LinkButton href="/profile" variant="outline" size="sm">

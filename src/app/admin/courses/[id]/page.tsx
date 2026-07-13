@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CourseEditForm } from "./CourseEditForm";
+import { ModulesManager } from "./ModulesManager";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -10,7 +11,10 @@ export default async function AdminCourseEditPage({ params }: Props) {
   const isNew = id === "new";
   const course = isNew
     ? null
-    : await prisma.course.findUnique({ where: { id } });
+    : await prisma.course.findUnique({
+        where: { id },
+        include: { modules: { orderBy: { order: "asc" } } },
+      });
 
   if (!isNew && !course) notFound();
 
@@ -26,6 +30,12 @@ export default async function AdminCourseEditPage({ params }: Props) {
       <div className="mt-8">
         <CourseEditForm course={course} />
       </div>
+
+      {course && (
+        <div className="mt-8">
+          <ModulesManager courseId={course.id} modules={course.modules} />
+        </div>
+      )}
     </div>
   );
 }

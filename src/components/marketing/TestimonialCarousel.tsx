@@ -3,12 +3,12 @@
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Quote, User } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/cn";
-import type { Testimonial } from "@/lib/types";
+import type { Review } from "@/generated/prisma/client";
 
-export function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
+export function TestimonialCarousel({ testimonials }: { testimonials: Review[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
   const [selected, setSelected] = useState(0);
 
@@ -34,16 +34,24 @@ export function TestimonialCarousel({ testimonials }: { testimonials: Testimonia
                 <Quote className="h-8 w-8 text-primary-200" />
                 <p className="flex-1 text-base text-neutral-700">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3 border-t border-neutral-100 pt-4">
-                  <Image
-                    src={t.avatar}
-                    alt={t.name}
-                    width={44}
-                    height={44}
-                    className="rounded-full object-cover"
-                  />
+                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-neutral-100">
+                    {t.avatar ? (
+                      <Image
+                        src={t.avatar}
+                        alt={t.authorName}
+                        fill
+                        sizes="44px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-neutral-300">
+                        <User className="h-4 w-4" />
+                      </div>
+                    )}
+                  </div>
                   <div>
-                    <p className="text-sm font-semibold text-neutral-900">{t.name}</p>
-                    <p className="text-xs text-neutral-500">{t.role}</p>
+                    <p className="text-sm font-semibold text-neutral-900">{t.authorName}</p>
+                    <p className="text-xs text-neutral-500">{t.authorRole}</p>
                   </div>
                   <div className="ml-auto flex">
                     {Array.from({ length: t.rating }).map((_, i) => (

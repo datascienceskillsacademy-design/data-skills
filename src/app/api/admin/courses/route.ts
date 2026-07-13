@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -18,6 +19,7 @@ const schema = z.object({
   level: z.string(),
   category: z.string(),
   isPublished: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -31,6 +33,8 @@ export async function POST(request: NextRequest) {
     const data = schema.parse(body);
 
     const course = await prisma.course.create({ data });
+    revalidatePath("/courses");
+    revalidatePath("/");
     return NextResponse.json(course, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {
