@@ -3,15 +3,22 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, Pencil, X, Users, Clock, Layers, BarChart3 } from "lucide-react";
-import type { Course } from "@/generated/prisma/client";
+import { Eye, Pencil, X, Users, Clock, Layers, BarChart3, Activity } from "lucide-react";
+import type { Course, CourseModule } from "@/generated/prisma/client";
+import { ManageModulesModal } from "./ManageModulesModal";
+import { CourseStatusModal } from "./CourseStatusModal";
 
 interface CourseRowActionsProps {
-  course: Course & { _count: { enrollments: number } };
+  course: Course & {
+    _count: { enrollments: number };
+    modules: CourseModule[];
+  };
 }
 
 export function CourseRowActions({ course }: CourseRowActionsProps) {
   const [open, setOpen] = useState(false);
+  const [modulesOpen, setModulesOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
 
   return (
     <>
@@ -24,6 +31,22 @@ export function CourseRowActions({ course }: CourseRowActionsProps) {
           <Eye className="h-3.5 w-3.5" />
           View
         </button>
+        <button
+          type="button"
+          onClick={() => setModulesOpen(true)}
+          className="flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900"
+        >
+          <Layers className="h-3.5 w-3.5" />
+          Modules
+        </button>
+        <button
+          type="button"
+          onClick={() => setStatusOpen(true)}
+          className="flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900"
+        >
+          <Activity className="h-3.5 w-3.5" />
+          Status
+        </button>
         <Link
           href={`/admin/courses/${course.id}`}
           className="flex items-center gap-1.5 text-xs font-medium text-primary-600 hover:text-primary-800"
@@ -32,6 +55,24 @@ export function CourseRowActions({ course }: CourseRowActionsProps) {
           Edit
         </Link>
       </div>
+
+      {modulesOpen && (
+        <ManageModulesModal
+          courseId={course.id}
+          courseTitle={course.title}
+          modules={course.modules}
+          onClose={() => setModulesOpen(false)}
+        />
+      )}
+
+      {statusOpen && (
+        <CourseStatusModal
+          courseId={course.id}
+          courseTitle={course.title}
+          currentStatus={course.status}
+          onClose={() => setStatusOpen(false)}
+        />
+      )}
 
       {open && (
         <div

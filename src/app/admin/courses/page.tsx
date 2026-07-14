@@ -4,11 +4,15 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Plus } from "lucide-react";
 import { CourseRowActions } from "./CourseRowActions";
+import { courseStatusConfig } from "./courseStatusConfig";
 
 export default async function AdminCoursesPage() {
   const courses = await prisma.course.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { enrollments: true } } },
+    include: {
+      _count: { select: { enrollments: true } },
+      modules: { orderBy: { order: "asc" } },
+    },
   });
 
   return (
@@ -53,6 +57,16 @@ export default async function AdminCoursesPage() {
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex flex-wrap gap-1.5">
+                    {(() => {
+                      const config = courseStatusConfig[course.status];
+                      const StatusIcon = config.icon;
+                      return (
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${config.badge}`}>
+                          <StatusIcon className="h-3 w-3" />
+                          {config.label}
+                        </span>
+                      );
+                    })()}
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${course.isPublished ? "bg-green-100 text-green-700" : "bg-neutral-100 text-neutral-600"}`}>
                       {course.isPublished ? "Published" : "Draft"}
                     </span>

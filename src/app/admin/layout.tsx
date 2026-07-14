@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Home } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { isStaff } from "@/lib/roles";
 import { AdminSidebarNav } from "./AdminSidebarNav";
+import { SidebarUserCard } from "./SidebarUserCard";
 
 export default async function AdminLayout({
   children,
@@ -16,7 +17,7 @@ export default async function AdminLayout({
   const role = session.user.role;
 
   return (
-    <div className="flex min-h-screen bg-neutral-50">
+    <div className="flex h-screen bg-neutral-50">
       {/* Sidebar */}
       <aside className="flex w-64 shrink-0 flex-col border-r border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
         <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-5 dark:border-neutral-800">
@@ -36,10 +37,16 @@ export default async function AdminLayout({
         <div className="border-t border-neutral-200 p-4 dark:border-neutral-800">
           <Link
             href="/"
-            className="block rounded-xl px-3 py-2 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800"
           >
-            ← Back to site
+            <Home className="h-4 w-4" />
+            Home Page
           </Link>
+          <SidebarUserCard
+            name={session.user.name ?? null}
+            email={session.user.email ?? null}
+            image={session.user.image ?? null}
+          />
         </div>
       </aside>
 

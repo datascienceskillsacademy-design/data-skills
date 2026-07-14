@@ -22,6 +22,7 @@ const schema = z.object({
   meetLink: z.string().optional(),
   isPublished: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  status: z.enum(["UPCOMING", "RUNNING", "COMPLETED"]).optional(),
 });
 
 async function requireAdmin() {

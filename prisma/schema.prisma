@@ -68,12 +68,13 @@ model VerificationToken {
 // ─── Courses ─────────────────────────────────────────────────────────────────
 
 model Course {
-  id            String   @id @default(cuid())
-  slug          String   @unique
+  id            String       @id @default(cuid())
+  slug          String       @unique
   title         String
   subtitle      String?
   description   String
   thumbnail     String?
+  status        CourseStatus @default(UPCOMING)
   price         Int
   originalPrice Int?
   durationLabel String
@@ -185,6 +186,12 @@ enum Role {
   ADMIN
   SUPER_ADMIN
   STUDENT_SUPPORT
+}
+
+enum CourseStatus {
+  UPCOMING
+  RUNNING
+  COMPLETED
 }
 
 enum EnrollmentStatus {

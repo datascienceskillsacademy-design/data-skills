@@ -27,7 +27,7 @@ export function AdminSidebarNav({ role }: { role: Role }) {
     role === "STUDENT_SUPPORT" ? links.filter((link) => link.support) : links;
 
   return (
-    <nav className="flex-1 p-4">
+    <nav className="flex-1 overflow-y-auto p-4">
       <ul className="space-y-1">
         {visibleLinks.map(({ href, label, icon: Icon }) => {
           const active = isLinkActive(pathname, href);
