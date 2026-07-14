@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { isAdmin } from "@/lib/roles";
 import { cloudinary } from "@/lib/cloudinary";
 
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -8,7 +9,7 @@ const ALLOWED_FOLDERS = ["courses", "instructors", "reviews"];
 
 export async function POST(request: NextRequest) {
   const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || !isAdmin(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

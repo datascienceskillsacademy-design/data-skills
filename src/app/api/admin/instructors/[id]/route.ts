@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
+import { isAdmin } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -22,7 +23,7 @@ const schema = z.object({
 
 async function requireAdmin() {
   const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") return null;
+  if (!session?.user || !isAdmin(session.user.role)) return null;
   return session;
 }
 

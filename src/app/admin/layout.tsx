@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { GraduationCap } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { isStaff } from "@/lib/roles";
 import { AdminSidebarNav } from "./AdminSidebarNav";
 
 export default async function AdminLayout({
@@ -11,7 +12,8 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") redirect("/");
+  if (!session?.user || !isStaff(session.user.role)) redirect("/");
+  const role = session.user.role;
 
   return (
     <div className="flex min-h-screen bg-neutral-50">
@@ -23,13 +25,13 @@ export default async function AdminLayout({
               <GraduationCap className="h-4 w-4" />
             </span>
             <span className="font-display text-sm font-bold text-neutral-900">
-              Admin Panel
+              {role === "STUDENT_SUPPORT" ? "Support Panel" : "Admin Panel"}
             </span>
           </div>
           {/* <ThemeToggle /> */}
         </div>
 
-        <AdminSidebarNav />
+        <AdminSidebarNav role={role} />
 
         <div className="border-t border-neutral-200 p-4 dark:border-neutral-800">
           <Link

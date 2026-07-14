@@ -14,7 +14,7 @@ const columns = [
   {
     title: "Company",
     links: [
-      { href: "/#founder", label: "About" },
+      { href: "/about", label: "About Us" },
       { href: "/reviews", label: "Reviews" },
       { href: "/courses", label: "Pricing" },
     ],
@@ -22,8 +22,7 @@ const columns = [
   {
     title: "Support",
     links: [
-      { href: "/", label: "Help Center" },
-      { href: "/", label: "Contact Us" },
+      { href: "/contact", label: "Contact Us" },
       { href: "/", label: "Terms & Privacy" },
     ],
   },

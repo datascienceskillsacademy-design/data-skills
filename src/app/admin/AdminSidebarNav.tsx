@@ -4,15 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, BookOpen, Users, ClipboardList, UserCircle, Star, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/cn";
+import type { Role } from "@/generated/prisma/client";
 
 const links = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
-  { href: "/admin/schedule", label: "Schedule", icon: CalendarDays },
+  { href: "/admin/schedule", label: "Schedule", icon: CalendarDays, support: true },
   { href: "/admin/instructors", label: "Instructors", icon: UserCircle },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/enrollments", label: "Enrollments", icon: ClipboardList },
+  { href: "/admin/enrollments", label: "Enrollments", icon: ClipboardList, support: true },
 ];
 
 function isLinkActive(pathname: string, href: string) {
@@ -20,13 +21,15 @@ function isLinkActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AdminSidebarNav() {
+export function AdminSidebarNav({ role }: { role: Role }) {
   const pathname = usePathname();
+  const visibleLinks =
+    role === "STUDENT_SUPPORT" ? links.filter((link) => link.support) : links;
 
   return (
     <nav className="flex-1 p-4">
       <ul className="space-y-1">
-        {links.map(({ href, label, icon: Icon }) => {
+        {visibleLinks.map(({ href, label, icon: Icon }) => {
           const active = isLinkActive(pathname, href);
           return (
             <li key={href}>

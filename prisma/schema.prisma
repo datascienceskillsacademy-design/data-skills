@@ -183,6 +183,8 @@ model Enrollment {
 enum Role {
   STUDENT
   ADMIN
+  SUPER_ADMIN
+  STUDENT_SUPPORT
 }
 
 enum EnrollmentStatus {
