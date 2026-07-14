@@ -14,7 +14,7 @@ const schema = z.object({
   notes: z.string().optional(),
 });
 
-async function requireAdmin() {
+async function requireStaff() {
   const session = await auth();
   if (!session?.user || !isStaff(session.user.role)) return null;
   return session;
@@ -24,7 +24,7 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await requireAdmin())) {
+  if (!(await requireStaff())) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -63,7 +63,7 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await requireAdmin())) {
+  if (!(await requireStaff())) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

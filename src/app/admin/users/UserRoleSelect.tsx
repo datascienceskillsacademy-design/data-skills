@@ -2,21 +2,36 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Role } from "@/generated/prisma/client";
 
 interface UserRoleSelectProps {
   userId: string;
-  currentRole: "STUDENT" | "ADMIN";
+  currentRole: Role;
   isSelf: boolean;
+  /** Whether the viewer is a SUPER_ADMIN (may grant/revoke SUPER_ADMIN). */
+  canManageSuperAdmin: boolean;
 }
 
-export function UserRoleSelect({ userId, currentRole, isSelf }: UserRoleSelectProps) {
+const roleStyles: Record<Role, string> = {
+  STUDENT: "border-blue-200 bg-blue-50 text-blue-700",
+  STUDENT_SUPPORT: "border-teal-200 bg-teal-50 text-teal-700",
+  ADMIN: "border-purple-200 bg-purple-50 text-purple-700",
+  SUPER_ADMIN: "border-amber-200 bg-amber-50 text-amber-700",
+};
+
+export function UserRoleSelect({
+  userId,
+  currentRole,
+  isSelf,
+  canManageSuperAdmin,
+}: UserRoleSelectProps) {
   const router = useRouter();
   const [role, setRole] = useState(currentRole);
   const [saving, setSaving] = useState(false);
-  const [pendingRole, setPendingRole] = useState<"STUDENT" | "ADMIN" | null>(null);
+  const [pendingRole, setPendingRole] = useState<Role | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setPendingRole(e.target.value as "STUDENT" | "ADMIN");
+    setPendingRole(e.target.value as Role);
   }
 
   async function confirmChange() {
@@ -52,20 +67,31 @@ export function UserRoleSelect({ userId, currentRole, isSelf }: UserRoleSelectPr
     );
   }
 
+  // Only a super admin can touch another super admin's role
+  if (role === "SUPER_ADMIN" && !canManageSuperAdmin) {
+    return (
+      <span
+        className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium ${roleStyles.SUPER_ADMIN}`}
+      >
+        SUPER_ADMIN
+      </span>
+    );
+  }
+
   return (
     <>
       <select
         value={role}
         onChange={handleChange}
         disabled={saving}
-        className={`rounded-lg border px-3 py-1.5 text-xs font-medium outline-none focus:border-primary-400 disabled:opacity-60 ${
-          role === "ADMIN"
-            ? "border-purple-200 bg-purple-50 text-purple-700"
-            : "border-blue-200 bg-blue-50 text-blue-700"
-        }`}
+        className={`rounded-lg border px-3 py-1.5 text-xs font-medium outline-none focus:border-primary-400 disabled:opacity-60 ${roleStyles[role]}`}
       >
         <option value="STUDENT">STUDENT</option>
+        <option value="STUDENT_SUPPORT">STUDENT_SUPPORT</option>
         <option value="ADMIN">ADMIN</option>
+        {canManageSuperAdmin && (
+          <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+        )}
       </select>
 
       {pendingRole && (

@@ -11,6 +11,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { LinkButton } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/cn";
+import { isStaff } from "@/lib/roles";
 
 const links = [
   { href: "/", label: "Home" },
@@ -116,7 +117,7 @@ export function Navbar() {
                         <User className="h-4 w-4 text-neutral-400" />
                         My Profile
                       </Link>
-                      {session.user.role === "ADMIN" && (
+                      {isStaff(session.user.role) && (
                         <Link
                           href="/admin"
                           onClick={() => setDropdownOpen(false)}
@@ -204,7 +205,7 @@ export function Navbar() {
                     <LinkButton href="/profile" variant="outline" size="sm">
                       My Profile
                     </LinkButton>
-                    {session.user.role === "ADMIN" && (
+                    {isStaff(session.user.role) && (
                       <LinkButton href="/admin" variant="outline" size="sm">
                         Admin
                       </LinkButton>

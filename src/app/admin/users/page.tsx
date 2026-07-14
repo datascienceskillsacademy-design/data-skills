@@ -65,6 +65,7 @@ export default async function AdminUsersPage() {
                     userId={user.id}
                     currentRole={user.role}
                     isSelf={user.id === session?.user.id}
+                    canManageSuperAdmin={session?.user.role === "SUPER_ADMIN"}
                   />
                 </td>
               </tr>
