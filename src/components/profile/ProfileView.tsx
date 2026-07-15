@@ -23,6 +23,8 @@ import {
   Rocket,
   PlayCircle,
   Download,
+  Phone,
+  BriefcaseBusiness,
 } from "lucide-react";
 import type { Prisma } from "@/generated/prisma/client";
 import { Card } from "@/components/ui/Card";
@@ -30,6 +32,7 @@ import { WhatsAppFloatButton } from "@/components/profile/WhatsAppFloatButton";
 import { ClassScheduleSection } from "@/components/profile/ClassScheduleSection";
 import { PaymentDueBanner } from "@/components/profile/PaymentDueBanner";
 import { ProgressRing } from "@/components/profile/ProgressRing";
+import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { SUPPORT_WHATSAPP_NUMBER } from "@/lib/payment";
 import { formatClassDate, formatClassTimeRange } from "@/lib/scheduleTime";
 
@@ -193,6 +196,14 @@ export function ProfileView({ user }: { user: ProfileUser }) {
               <h1 className="font-display text-2xl font-bold text-neutral-900">
                 {user.name ?? "Student"}
               </h1>
+              {(user.designation || user.organization) && (
+                <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-neutral-700">
+                  <BriefcaseBusiness className="h-3.5 w-3.5 text-neutral-400" />
+                  {[user.designation, user.organization]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              )}
               <p className="mt-1 flex items-center gap-1.5 text-sm text-neutral-500">
                 <Mail className="h-3.5 w-3.5" />
                 {user.email}
@@ -202,6 +213,12 @@ export function ProfileView({ user }: { user: ProfileUser }) {
                   <ShieldCheck className="h-3.5 w-3.5" />
                   {roleLabels[user.role] ?? user.role}
                 </span>
+                {user.phone && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600">
+                    <Phone className="h-3.5 w-3.5" />
+                    {user.phone}
+                  </span>
+                )}
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-600">
                   <CalendarDays className="h-3.5 w-3.5" />
                   Member since{" "}
@@ -213,13 +230,24 @@ export function ProfileView({ user }: { user: ProfileUser }) {
               </div>
             </div>
 
-            <Link
-              href="/courses"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-primary-200 px-5 py-2.5 text-sm font-semibold text-primary-700 transition hover:bg-primary-50"
-            >
-              Browse Courses
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex shrink-0 flex-wrap items-center gap-3">
+              <EditProfileModal
+                email={user.email}
+                initial={{
+                  name: user.name ?? "",
+                  phone: user.phone ?? "",
+                  designation: user.designation ?? "",
+                  organization: user.organization ?? "",
+                }}
+              />
+              <Link
+                href="/courses"
+                className="inline-flex items-center gap-2 rounded-full border border-primary-200 px-5 py-2.5 text-sm font-semibold text-primary-700 transition hover:bg-primary-50"
+              >
+                Browse Courses
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </Card>
 
@@ -394,7 +422,7 @@ export function ProfileView({ user }: { user: ProfileUser }) {
                             name={user.name ?? "Student"}
                             email={user.email}
                             courseTitle={course.title}
-                            coursePrice={course.price}
+                            coursePrice={enrollment.payableAmount ?? course.price}
                             amountPaid={enrollment.amountPaid}
                           />
                         )}

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
 import { UserRoleSelect } from "./UserRoleSelect";
+import { UserDetailsModal } from "./UserDetailsModal";
 import { auth } from "@/auth";
 import Image from "next/image";
 import { User } from "lucide-react";
@@ -10,7 +11,13 @@ export default async function AdminUsersPage() {
   const session = await auth();
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { enrollments: true } } },
+    include: {
+      _count: { select: { enrollments: true } },
+      enrollments: {
+        orderBy: { enrolledAt: "desc" },
+        include: { course: { select: { title: true } } },
+      },
+    },
   });
 
   return (
@@ -28,6 +35,7 @@ export default async function AdminUsersPage() {
               <th className="px-5 py-3 text-left font-medium text-neutral-500">Enrollments</th>
               <th className="px-5 py-3 text-left font-medium text-neutral-500">Joined</th>
               <th className="px-5 py-3 text-left font-medium text-neutral-500">Role</th>
+              <th className="px-5 py-3 text-left font-medium text-neutral-500">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -67,6 +75,9 @@ export default async function AdminUsersPage() {
                     isSelf={user.id === session?.user.id}
                     canManageSuperAdmin={session?.user.role === "SUPER_ADMIN"}
                   />
+                </td>
+                <td className="px-5 py-3">
+                  <UserDetailsModal user={user} />
                 </td>
               </tr>
             ))}

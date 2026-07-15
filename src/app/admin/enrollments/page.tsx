@@ -46,12 +46,21 @@ export default async function AdminEnrollmentsPage() {
                 <td className="px-5 py-3">
                   <div className="text-xs font-medium text-neutral-700">
                     {e.paymentMethod}
+                    {e.offlinePaymentMethod && (
+                      <span className="capitalize text-neutral-400">
+                        {" "}
+                        · {e.offlinePaymentMethod}
+                      </span>
+                    )}
                   </div>
-                  {e.offlinePaymentMethod && (
-                    <div className="text-xs text-neutral-400 capitalize">
-                      {e.offlinePaymentMethod}
+                  {e.couponCode && (
+                    <div className="mt-0.5 text-xs font-semibold text-primary-600">
+                      {e.couponCode} (−{e.discountPercent}%)
                     </div>
                   )}
+                  <div className="text-xs text-neutral-400">
+                    Payable ৳{(e.payableAmount ?? e.course.price).toLocaleString()}
+                  </div>
                 </td>
                 <td className="px-5 py-3 text-xs text-neutral-500">
                   {e.transactionId ?? e.offlineReference ?? "—"}
@@ -63,7 +72,7 @@ export default async function AdminEnrollmentsPage() {
                   <EnrollmentAdminControls
                     enrollmentId={e.id}
                     currentStatus={e.status}
-                    coursePrice={e.course.price}
+                    coursePrice={e.payableAmount ?? e.course.price}
                     initialAmountPaid={e.amountPaid}
                   />
                 </td>

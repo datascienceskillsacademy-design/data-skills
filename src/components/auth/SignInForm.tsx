@@ -38,7 +38,9 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
   }
 
   async function handleGoogle() {
-    await signIn("google", { callbackUrl: "/" });
+    // First-time Google users must complete their profile;
+    // the page redirects already-complete users onward.
+    await signIn("google", { callbackUrl: "/complete-profile" });
   }
 
   return (

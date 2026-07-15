@@ -16,6 +16,9 @@ model User {
   emailVerified  DateTime?
   image          String?
   hashedPassword String?
+  phone          String?
+  designation    String?
+  organization   String?
   role           Role      @default(STUDENT)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -170,13 +173,34 @@ model Enrollment {
   offlinePaymentMethod String?
   offlineReference     String?
   amountPaid           Int?
+  // Final price at enrollment time (course price minus coupon discount)
+  payableAmount        Int?
+  couponId             String?
+  couponCode           String?
+  discountPercent      Int?
   enrolledAt           DateTime         @default(now())
   approvedAt           DateTime?
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  coupon Coupon? @relation(fields: [couponId], references: [id], onDelete: SetNull)
 
   @@unique([userId, courseId])
+}
+
+model Coupon {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountPercent Int
+  description     String?
+  expiresAt       DateTime?
+  maxUses         Int?
+  usedCount       Int       @default(0)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  enrollments Enrollment[]
 }
 
 // ─── Enums ───────────────────────────────────────────────────────────────────

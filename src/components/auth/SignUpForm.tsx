@@ -34,19 +34,18 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
       return;
     }
 
-    // Auto sign in after register
+    // Auto sign in after register, then collect the rest of the profile
     await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
-    if (onSuccess) {
-      onSuccess();
-    } else {
-      router.push("/");
-      router.refresh();
-    }
+    onSuccess?.();
+    router.push("/complete-profile");
+    router.refresh();
   }
 
   async function handleGoogle() {
-    await signIn("google", { callbackUrl: "/" });
+    // New Google accounts are sent to complete their profile;
+    // the page redirects already-complete users onward.
+    await signIn("google", { callbackUrl: "/complete-profile" });
   }
 
   return (

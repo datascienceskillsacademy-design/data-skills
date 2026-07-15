@@ -14,8 +14,18 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       role: Role;
+      profileCompleted: boolean;
     };
   }
+}
+
+function isProfileComplete(user: {
+  name: string | null;
+  phone: string | null;
+  designation: string | null;
+  organization: string | null;
+}) {
+  return !!(user.name && user.phone && user.designation && user.organization);
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -65,13 +75,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id = user.id;
         token.role = user.role as Role;
       }
-      // Refresh role from DB on each sign-in to pick up admin changes
-      if (!token.role && token.id) {
+      // Re-check the DB until the profile is complete (or role is missing),
+      // so completing the profile takes effect on the next request without
+      // forcing a re-login. Completed profiles are cached in the token.
+      if (token.id && (!token.role || token.profileCompleted !== true)) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true },
+          select: {
+            role: true,
+            name: true,
+            phone: true,
+            designation: true,
+            organization: true,
+          },
         });
-        if (dbUser) token.role = dbUser.role as Role;
+        if (dbUser) {
+          token.role = dbUser.role as Role;
+          // Only students are required to complete the extended profile
+          token.profileCompleted =
+            dbUser.role !== "STUDENT" || isProfileComplete(dbUser);
+        }
       }
       return token;
     },
@@ -79,6 +102,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
+        session.user.profileCompleted = token.profileCompleted === true;
       }
       return session;
     },

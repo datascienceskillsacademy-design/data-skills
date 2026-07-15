@@ -32,6 +32,20 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // ── Students with an incomplete profile must finish it first ──────────────
+  if (
+    session?.user &&
+    session.user.role === "STUDENT" &&
+    !session.user.profileCompleted &&
+    (pathname.startsWith("/profile") ||
+      pathname.startsWith("/checkout") ||
+      pathname.startsWith("/dashboard"))
+  ) {
+    const completeUrl = new URL("/complete-profile", request.url);
+    completeUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(completeUrl);
+  }
+
   return NextResponse.next();
 }
 
