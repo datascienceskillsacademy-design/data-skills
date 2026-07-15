@@ -151,24 +151,26 @@ export function EnrollmentTrendChart({ data }: { data: TrendPoint[] }) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="border-b border-neutral-100 text-left text-xs text-neutral-500">
-              <th className="py-2 pr-4 font-medium">Month</th>
-              <th className="py-2 pr-4 font-medium">Enrollments</th>
-              <th className="py-2 font-medium">New students</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row) => (
-              <tr key={row.month} className="border-b border-neutral-50">
-                <td className="py-2 pr-4 font-medium text-neutral-700">{row.month}</td>
-                <td className="py-2 pr-4 tabular-nums text-neutral-700">{row.enrollments}</td>
-                <td className="py-2 tabular-nums text-neutral-700">{row.students}</td>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-neutral-100 text-left text-xs text-neutral-500">
+                <th className="py-2 pr-4 font-medium">Month</th>
+                <th className="py-2 pr-4 font-medium">Enrollments</th>
+                <th className="py-2 font-medium">New students</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={row.month} className="border-b border-neutral-50">
+                  <td className="py-2 pr-4 font-medium text-neutral-700">{row.month}</td>
+                  <td className="py-2 pr-4 tabular-nums text-neutral-700">{row.enrollments}</td>
+                  <td className="py-2 tabular-nums text-neutral-700">{row.students}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

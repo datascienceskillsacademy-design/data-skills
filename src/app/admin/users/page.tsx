@@ -28,6 +28,7 @@ export default async function AdminUsersPage() {
       </p>
 
       <Card className="mt-8 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
@@ -83,6 +84,7 @@ export default async function AdminUsersPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

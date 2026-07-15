@@ -391,40 +391,42 @@ export default async function AdminOverviewPage() {
               View all
             </Link>
           </div>
-          <table className="mt-4 w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-100 bg-neutral-50">
-                <th className="px-6 py-3 text-left font-medium text-neutral-500">Student</th>
-                <th className="px-6 py-3 text-left font-medium text-neutral-500">Course</th>
-                <th className="px-6 py-3 text-left font-medium text-neutral-500">Status</th>
-                <th className="px-6 py-3 text-left font-medium text-neutral-500">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentEnrollments.map((e) => (
-                <tr key={e.id} className="border-b border-neutral-50 hover:bg-neutral-50">
-                  <td className="px-6 py-3">
-                    <div className="font-medium text-neutral-900">{e.user.name}</div>
-                    <div className="text-xs text-neutral-400">{e.user.email}</div>
-                  </td>
-                  <td className="px-6 py-3 text-neutral-700">{e.course.title}</td>
-                  <td className="px-6 py-3">
-                    <StatusBadge status={e.status} />
-                  </td>
-                  <td className="px-6 py-3 tabular-nums text-neutral-400">
-                    {e.enrolledAt.toLocaleDateString()}
-                  </td>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-neutral-100 bg-neutral-50">
+                  <th className="px-6 py-3 text-left font-medium text-neutral-500">Student</th>
+                  <th className="px-6 py-3 text-left font-medium text-neutral-500">Course</th>
+                  <th className="px-6 py-3 text-left font-medium text-neutral-500">Status</th>
+                  <th className="px-6 py-3 text-left font-medium text-neutral-500">Date</th>
                 </tr>
-              ))}
-              {recentEnrollments.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-neutral-400">
-                    No enrollments yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentEnrollments.map((e) => (
+                  <tr key={e.id} className="border-b border-neutral-50 hover:bg-neutral-50">
+                    <td className="px-6 py-3">
+                      <div className="font-medium text-neutral-900">{e.user.name}</div>
+                      <div className="text-xs text-neutral-400">{e.user.email}</div>
+                    </td>
+                    <td className="px-6 py-3 text-neutral-700">{e.course.title}</td>
+                    <td className="px-6 py-3">
+                      <StatusBadge status={e.status} />
+                    </td>
+                    <td className="px-6 py-3 tabular-nums text-neutral-400">
+                      {e.enrolledAt.toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+                {recentEnrollments.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-neutral-400">
+                      No enrollments yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </Card>
       </div>
     </div>

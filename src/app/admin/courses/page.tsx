@@ -17,7 +17,7 @@ export default async function AdminCoursesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold text-neutral-900">Courses</h1>
           <p className="mt-1 text-neutral-500">Manage all courses.</p>
@@ -32,6 +32,7 @@ export default async function AdminCoursesPage() {
       </div>
 
       <Card className="mt-8 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
@@ -84,6 +85,7 @@ export default async function AdminCoursesPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

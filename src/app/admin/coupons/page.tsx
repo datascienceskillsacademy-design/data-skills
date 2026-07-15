@@ -21,7 +21,7 @@ export default async function AdminCouponsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-bold text-neutral-900">
             Coupons
@@ -34,6 +34,7 @@ export default async function AdminCouponsPage() {
       </div>
 
       <Card className="mt-8 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
@@ -107,6 +108,7 @@ export default async function AdminCouponsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

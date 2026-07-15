@@ -117,6 +117,7 @@ export default async function AdminEarningsPage() {
         By Course
       </h2>
       <Card className="mt-4 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
@@ -154,6 +155,7 @@ export default async function AdminEarningsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </Card>
 
       {/* Detailed */}
@@ -161,6 +163,7 @@ export default async function AdminEarningsPage() {
         Detailed
       </h2>
       <Card className="mt-4 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-100 bg-neutral-50">
@@ -228,6 +231,7 @@ export default async function AdminEarningsPage() {
             )}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

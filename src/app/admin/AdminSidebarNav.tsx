@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, BookOpen, Users, ClipboardList, UserCircle, Star, CalendarDays, Wallet, TicketPercent } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useCloseSidebar } from "./AdminShell";
 import type { Role } from "@/generated/prisma/client";
 
 const links = [
@@ -25,6 +26,7 @@ function isLinkActive(pathname: string, href: string) {
 
 export function AdminSidebarNav({ role }: { role: Role }) {
   const pathname = usePathname();
+  const closeSidebar = useCloseSidebar();
   const visibleLinks =
     role === "STUDENT_SUPPORT" ? links.filter((link) => link.support) : links;
 
@@ -37,6 +39,7 @@ export function AdminSidebarNav({ role }: { role: Role }) {
             <li key={href}>
               <Link
                 href={href}
+                onClick={() => closeSidebar?.()}
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
                   active

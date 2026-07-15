@@ -95,7 +95,7 @@ export function UserRoleSelect({
       </select>
 
       {pendingRole && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
             <h2 className="text-sm font-semibold text-neutral-900">Change role</h2>
             <p className="mt-2 text-sm text-neutral-600">
