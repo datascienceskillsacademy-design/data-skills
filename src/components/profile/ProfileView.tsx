@@ -25,6 +25,7 @@ import {
   Download,
   Phone,
   BriefcaseBusiness,
+  FileText,
 } from "lucide-react";
 import type { Prisma } from "@/generated/prisma/client";
 import { Card } from "@/components/ui/Card";
@@ -33,6 +34,7 @@ import { ClassScheduleSection } from "@/components/profile/ClassScheduleSection"
 import { PaymentDueBanner } from "@/components/profile/PaymentDueBanner";
 import { ProgressRing } from "@/components/profile/ProgressRing";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { AssignmentSubmissionForm } from "@/components/profile/AssignmentSubmissionForm";
 import { SUPPORT_WHATSAPP_NUMBER } from "@/lib/payment";
 import { formatClassDate, formatClassTimeRange } from "@/lib/scheduleTime";
 
@@ -41,7 +43,11 @@ export type ProfileUser = Prisma.UserGetPayload<{
     enrollments: {
       include: {
         course: {
-          include: { modules: true; classSchedules: true };
+          include: {
+            modules: true;
+            classSchedules: true;
+            assignments: { include: { submissions: true } };
+          };
         };
       };
     };
@@ -457,6 +463,39 @@ export function ProfileView({ user }: { user: ProfileUser }) {
                                 </li>
                               ))}
                             </ul>
+                          </div>
+                        )}
+
+                        {approved && course.assignments.length > 0 && (
+                          <div className="mt-5 border-t border-neutral-100 pt-4">
+                            <div className="flex items-center justify-between">
+                              <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                                <FileText className="h-3.5 w-3.5" />
+                                Assignments
+                              </p>
+                              <span className="text-xs font-medium text-neutral-400">
+                                {course.assignments.filter((a) => a.submissions.length > 0).length}/
+                                {course.assignments.length} submitted
+                              </span>
+                            </div>
+                            <div className="mt-2.5 space-y-2">
+                              {course.assignments.map((assignment) => (
+                                <AssignmentSubmissionForm
+                                  key={assignment.id}
+                                  assignmentId={assignment.id}
+                                  title={assignment.title}
+                                  docLink={assignment.docLink}
+                                  submission={
+                                    assignment.submissions[0]
+                                      ? {
+                                          link: assignment.submissions[0].link,
+                                          submittedAt: assignment.submissions[0].submittedAt,
+                                        }
+                                      : null
+                                  }
+                                />
+                              ))}
+                            </div>
                           </div>
                         )}
 

@@ -23,9 +23,10 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  accounts    Account[]
-  sessions    Session[]
-  enrollments Enrollment[]
+  accounts              Account[]
+  sessions              Session[]
+  enrollments           Enrollment[]
+  assignmentSubmissions AssignmentSubmission[]
 }
 
 model Account {
@@ -96,6 +97,7 @@ model Course {
   modules        CourseModule[]
   enrollments    Enrollment[]
   classSchedules ClassSchedule[]
+  assignments    Assignment[]
 }
 
 model CourseModule {
@@ -124,6 +126,35 @@ model ClassSchedule {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([courseId, startsAt])
+}
+
+model Assignment {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  docLink   String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course      Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  submissions AssignmentSubmission[]
+
+  @@unique([courseId, order])
+}
+
+model AssignmentSubmission {
+  id           String   @id @default(cuid())
+  assignmentId String
+  userId       String
+  link         String
+  submittedAt  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, userId])
 }
 
 // ─── Instructors & Reviews ───────────────────────────────────────────────────

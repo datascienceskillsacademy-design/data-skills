@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, BookOpen, Users, ClipboardList, UserCircle, Star, CalendarDays, Wallet, TicketPercent } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, ClipboardList, UserCircle, Star, CalendarDays, Wallet, TicketPercent, FileText } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useCloseSidebar } from "./AdminShell";
 import type { Role } from "@/generated/prisma/client";
@@ -11,6 +11,7 @@ const links = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/earnings", label: "Earnings", icon: Wallet },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/admin/assignments", label: "Assignments", icon: FileText },
   { href: "/admin/schedule", label: "Schedule", icon: CalendarDays, support: true },
   { href: "/admin/instructors", label: "Instructors", icon: UserCircle },
   { href: "/admin/reviews", label: "Reviews", icon: Star },

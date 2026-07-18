@@ -17,6 +17,12 @@ export default async function ProfilePage() {
             include: {
               modules: { orderBy: { order: "asc" } },
               classSchedules: { orderBy: { startsAt: "asc" } },
+              assignments: {
+                orderBy: { order: "asc" },
+                include: {
+                  submissions: { where: { userId: session.user.id } },
+                },
+              },
             },
           },
         },
