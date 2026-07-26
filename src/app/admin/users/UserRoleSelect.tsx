@@ -15,6 +15,7 @@ interface UserRoleSelectProps {
 const roleStyles: Record<Role, string> = {
   STUDENT: "border-blue-200 bg-blue-50 text-blue-700",
   STUDENT_SUPPORT: "border-teal-200 bg-teal-50 text-teal-700",
+  INSTRUCTOR: "border-indigo-200 bg-indigo-50 text-indigo-700",
   ADMIN: "border-purple-200 bg-purple-50 text-purple-700",
   SUPER_ADMIN: "border-amber-200 bg-amber-50 text-amber-700",
 };
@@ -88,6 +89,7 @@ export function UserRoleSelect({
       >
         <option value="STUDENT">STUDENT</option>
         <option value="STUDENT_SUPPORT">STUDENT_SUPPORT</option>
+        <option value="INSTRUCTOR">INSTRUCTOR</option>
         <option value="ADMIN">ADMIN</option>
         {canManageSuperAdmin && (
           <option value="SUPER_ADMIN">SUPER_ADMIN</option>

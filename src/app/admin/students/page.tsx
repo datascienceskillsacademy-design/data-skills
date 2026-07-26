@@ -4,9 +4,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isInstructor } from "@/lib/roles";
 import { instructorCourseIds } from "@/lib/courseAccess";
-import { AssignmentsBoard } from "./AssignmentsBoard";
+import { StudentsBoard } from "./StudentsBoard";
 
-export default async function AdminAssignmentsPage() {
+export default async function AdminStudentsPage() {
   const session = await auth();
   if (!session?.user) redirect("/");
 
@@ -20,26 +20,28 @@ export default async function AdminAssignmentsPage() {
     select: {
       id: true,
       title: true,
-      _count: {
-        select: { enrollments: { where: { status: { in: ["APPROVED", "COMPLETED"] } } } },
-      },
-      modules: { select: { id: true, title: true }, orderBy: { order: "asc" } },
-      assignments: {
-        orderBy: { order: "asc" },
-        include: { _count: { select: { submissions: true } } },
+      enrollments: {
+        where: { status: { in: ["APPROVED", "COMPLETED"] } },
+        orderBy: { enrolledAt: "desc" },
+        select: {
+          id: true,
+          status: true,
+          enrolledAt: true,
+          user: { select: { id: true, name: true, email: true, phone: true } },
+        },
       },
     },
   });
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-neutral-900">Assignments</h1>
+      <h1 className="font-display text-2xl font-bold text-neutral-900">Students</h1>
       <p className="mt-1 text-neutral-500">
-        Manage assignment briefs and review student submissions, course by course.
+        See who&rsquo;s enrolled in each of your courses.
       </p>
 
       <div className="mt-8">
-        <AssignmentsBoard courses={courses} />
+        <StudentsBoard courses={courses} />
       </div>
     </div>
   );

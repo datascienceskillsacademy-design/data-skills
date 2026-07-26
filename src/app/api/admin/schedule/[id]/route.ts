@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { isStaff } from "@/lib/roles";
+import { canManageCourse } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -14,21 +14,29 @@ const schema = z.object({
   notes: z.string().optional(),
 });
 
-async function requireStaff() {
+async function requireScheduleAccess(id: string) {
   const session = await auth();
-  if (!session?.user || !isStaff(session.user.role)) return null;
-  return session;
+  if (!session?.user) return null;
+
+  const existing = await prisma.classSchedule.findUnique({
+    where: { id },
+    select: { courseId: true },
+  });
+  if (!existing) return null;
+
+  const allowed = await canManageCourse(session.user.role, session.user.id, existing.courseId);
+  return allowed ? session : null;
 }
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await requireStaff())) {
+  const { id } = await params;
+
+  if (!(await requireScheduleAccess(id))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  const { id } = await params;
 
   try {
     const body = await request.json();
@@ -63,11 +71,11 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await requireStaff())) {
+  const { id } = await params;
+
+  if (!(await requireScheduleAccess(id))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  const { id } = await params;
 
   try {
     await prisma.classSchedule.delete({ where: { id } });

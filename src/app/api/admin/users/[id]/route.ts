@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const schema = z.object({
-  role: z.enum(["STUDENT", "STUDENT_SUPPORT", "ADMIN", "SUPER_ADMIN"]),
+  role: z.enum(["STUDENT", "STUDENT_SUPPORT", "INSTRUCTOR", "ADMIN", "SUPER_ADMIN"]),
 });
 
 export async function PATCH(

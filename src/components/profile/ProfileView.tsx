@@ -97,6 +97,7 @@ const courseStatusChips = {
 
 const roleLabels: Record<string, string> = {
   STUDENT: "Student",
+  INSTRUCTOR: "Instructor",
   ADMIN: "Admin",
   SUPER_ADMIN: "Super Admin",
   STUDENT_SUPPORT: "Student Support",

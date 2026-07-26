@@ -9,12 +9,22 @@ export default async function AdminCourseEditPage({ params }: Props) {
   const { id } = await params;
 
   const isNew = id === "new";
-  const course = isNew
-    ? null
-    : await prisma.course.findUnique({
-        where: { id },
-        include: { modules: { orderBy: { order: "asc" } } },
-      });
+  const [course, availableInstructors] = await Promise.all([
+    isNew
+      ? Promise.resolve(null)
+      : prisma.course.findUnique({
+          where: { id },
+          include: {
+            modules: { orderBy: { order: "asc" } },
+            instructorAssignments: { select: { userId: true } },
+          },
+        }),
+    prisma.user.findMany({
+      where: { role: "INSTRUCTOR" },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   if (!isNew && !course) notFound();
 
@@ -28,7 +38,11 @@ export default async function AdminCourseEditPage({ params }: Props) {
       </p>
 
       <div className="mt-8">
-        <CourseEditForm course={course} />
+        <CourseEditForm
+          course={course}
+          availableInstructors={availableInstructors}
+          assignedInstructorIds={course?.instructorAssignments.map((a) => a.userId) ?? []}
+        />
       </div>
 
       {course && (

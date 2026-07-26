@@ -23,6 +23,7 @@ const schema = z.object({
   isPublished: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   status: z.enum(["UPCOMING", "RUNNING", "COMPLETED"]).optional(),
+  instructorUserIds: z.array(z.string()).optional(),
 });
 
 async function requireAdmin() {
@@ -43,9 +44,22 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const data = schema.parse(body);
+    const { instructorUserIds, ...data } = schema.parse(body);
 
     const course = await prisma.course.update({ where: { id }, data });
+
+    if (instructorUserIds) {
+      await prisma.$transaction([
+        prisma.courseInstructor.deleteMany({
+          where: { courseId: id, userId: { notIn: instructorUserIds } },
+        }),
+        prisma.courseInstructor.createMany({
+          data: instructorUserIds.map((userId) => ({ courseId: id, userId })),
+          skipDuplicates: true,
+        }),
+      ]);
+    }
+
     revalidatePath("/courses");
     revalidatePath(`/courses/${course.slug}`);
     revalidatePath("/");

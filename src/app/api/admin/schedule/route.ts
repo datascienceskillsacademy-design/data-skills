@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { isStaff } from "@/lib/roles";
+import { isStaff, isInstructor } from "@/lib/roles";
+import { canManageCourse, instructorCourseIds } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -20,7 +21,12 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const courseFilter = isInstructor(session.user.role)
+    ? { id: { in: await instructorCourseIds(session.user.id) } }
+    : {};
+
   const classes = await prisma.classSchedule.findMany({
+    where: { course: courseFilter },
     include: { course: { select: { id: true, title: true, slug: true } } },
     orderBy: { startsAt: "asc" },
   });
@@ -30,13 +36,17 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const session = await auth();
-  if (!session?.user || !isStaff(session.user.role)) {
+  if (!session?.user) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
     const body = await request.json();
     const data = schema.parse(body);
+
+    if (!(await canManageCourse(session.user.role, session.user.id, data.courseId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     if (data.endsAt <= data.startsAt) {
       return NextResponse.json(

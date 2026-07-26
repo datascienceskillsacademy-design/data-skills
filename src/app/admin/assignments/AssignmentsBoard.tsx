@@ -14,7 +14,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
-import { cn } from "@/lib/cn";
+import { CourseListPanel } from "../_components/CourseListPanel";
 import { AssignmentModal } from "./AssignmentModal";
 import { AssignmentSubmissionsModal } from "./AssignmentSubmissionsModal";
 
@@ -24,13 +24,20 @@ interface AssignmentRow {
   docLink: string;
   order: number;
   courseId: string;
+  moduleId: string | null;
   _count: { submissions: number };
+}
+
+interface ModuleOption {
+  id: string;
+  title: string;
 }
 
 interface CourseWithAssignments {
   id: string;
   title: string;
   _count: { enrollments: number };
+  modules: ModuleOption[];
   assignments: AssignmentRow[];
 }
 
@@ -97,48 +104,12 @@ export function AssignmentsBoard({ courses }: { courses: CourseWithAssignments[]
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-      {/* Course list */}
-      <Card className="h-fit overflow-hidden lg:sticky lg:top-6">
-        <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
-            Courses
-          </p>
-          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-500">
-            {totalAssignments}
-          </span>
-        </div>
-        <ul className="max-h-[32rem] overflow-y-auto p-2 lg:max-h-[70vh]">
-          {courses.map((course) => {
-            const active = course.id === selectedCourseId;
-            return (
-              <li key={course.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCourseId(course.id)}
-                  className={cn(
-                    "flex w-full items-center justify-between gap-2 rounded-xl px-3.5 py-3 text-left text-sm transition",
-                    active
-                      ? "bg-primary-50 font-semibold text-primary-700"
-                      : "text-neutral-600 hover:bg-neutral-50"
-                  )}
-                >
-                  <span className="min-w-0 truncate">{course.title}</span>
-                  <span
-                    className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
-                      active
-                        ? "bg-primary-100 text-primary-700"
-                        : "bg-neutral-100 text-neutral-500"
-                    )}
-                  >
-                    {course.assignments.length}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </Card>
+      <CourseListPanel
+        courses={courses.map((c) => ({ id: c.id, title: c.title, badge: c.assignments.length }))}
+        selectedId={selectedCourseId}
+        onSelect={setSelectedCourseId}
+        totalBadge={totalAssignments}
+      />
 
       {/* Assignments for selected course */}
       <Card className="overflow-hidden">
@@ -180,6 +151,7 @@ export function AssignmentsBoard({ courses }: { courses: CourseWithAssignments[]
                   <th className="px-5 py-3 text-left font-medium text-neutral-500">
                     Assignment
                   </th>
+                  <th className="px-5 py-3 text-left font-medium text-neutral-500">Module</th>
                   <th className="px-5 py-3 text-left font-medium text-neutral-500">Link</th>
                   <th className="px-5 py-3 text-left font-medium text-neutral-500">
                     Submissions
@@ -193,6 +165,9 @@ export function AssignmentsBoard({ courses }: { courses: CourseWithAssignments[]
                   const total = selectedCourse?._count.enrollments ?? 0;
                   const submitted = assignment._count.submissions;
                   const pct = total > 0 ? Math.round((submitted / total) * 100) : 0;
+                  const moduleTitle = selectedCourse?.modules.find(
+                    (m) => m.id === assignment.moduleId
+                  )?.title;
                   return (
                     <tr
                       key={assignment.id}
@@ -201,6 +176,15 @@ export function AssignmentsBoard({ courses }: { courses: CourseWithAssignments[]
                       <td className="px-5 py-3 tabular-nums text-neutral-400">{i + 1}</td>
                       <td className="px-5 py-3 font-medium text-neutral-900">
                         {assignment.title}
+                      </td>
+                      <td className="px-5 py-3">
+                        {moduleTitle ? (
+                          <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-600">
+                            {moduleTitle}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-neutral-300">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-3">
                         <a
@@ -284,6 +268,7 @@ export function AssignmentsBoard({ courses }: { courses: CourseWithAssignments[]
         <AssignmentModal
           courseId={selectedCourse.id}
           courseTitle={selectedCourse.title}
+          modules={selectedCourse.modules}
           assignment={modalState === "new" ? null : modalState}
           onClose={() => setModalState(null)}
         />

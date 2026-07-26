@@ -70,10 +70,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = user.role as Role;
+      }
+      // A client called useSession().update() — e.g. after the account-settings
+      // form saves a new name/email. Pull the latest values straight from the DB.
+      if (trigger === "update" && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { name: true, email: true },
+        });
+        if (dbUser) {
+          token.name = dbUser.name;
+          token.email = dbUser.email;
+        }
       }
       // Re-check the DB until the profile is complete (or role is missing),
       // so completing the profile takes effect on the next request without

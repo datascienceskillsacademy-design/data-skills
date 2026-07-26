@@ -1,30 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/roles";
+import { canManageCourse } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const schema = z.object({
   title: z.string().trim().min(2).optional(),
   docLink: z.string().trim().min(1).optional(),
+  moduleId: z.string().nullable().optional(),
   order: z.number().int().optional(),
 });
 
-async function requireAdmin() {
+async function requireAssignmentAccess(assignmentId: string) {
   const session = await auth();
-  if (!session?.user || !isAdmin(session.user.role)) return null;
-  return session;
+  if (!session?.user) return null;
+
+  const assignment = await prisma.assignment.findUnique({
+    where: { id: assignmentId },
+    select: { courseId: true },
+  });
+  if (!assignment) return null;
+
+  const allowed = await canManageCourse(
+    session.user.role,
+    session.user.id,
+    assignment.courseId
+  );
+  return allowed ? session : null;
 }
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ assignmentId: string }> }
 ) {
-  if (!(await requireAdmin())) {
+  const { assignmentId } = await params;
+
+  if (!(await requireAssignmentAccess(assignmentId))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  const { assignmentId } = await params;
 
   try {
     const body = await request.json();
@@ -49,11 +62,11 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ assignmentId: string }> }
 ) {
-  if (!(await requireAdmin())) {
+  const { assignmentId } = await params;
+
+  if (!(await requireAssignmentAccess(assignmentId))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  const { assignmentId } = await params;
 
   try {
     await prisma.assignment.delete({ where: { id: assignmentId } });

@@ -2,22 +2,64 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, BookOpen, Users, ClipboardList, UserCircle, Star, CalendarDays, Wallet, TicketPercent, FileText } from "lucide-react";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  ClipboardList,
+  UserCircle,
+  Star,
+  CalendarDays,
+  Wallet,
+  TicketPercent,
+  FileText,
+  GraduationCap,
+  UserCog,
+} from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useCloseSidebar } from "./AdminShell";
 import type { Role } from "@/generated/prisma/client";
 
+const ALL_STAFF: Role[] = ["ADMIN", "SUPER_ADMIN"];
+
 const links = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/earnings", label: "Earnings", icon: Wallet },
-  { href: "/admin/courses", label: "Courses", icon: BookOpen },
-  { href: "/admin/assignments", label: "Assignments", icon: FileText },
-  { href: "/admin/schedule", label: "Schedule", icon: CalendarDays, support: true },
-  { href: "/admin/instructors", label: "Instructors", icon: UserCircle },
-  { href: "/admin/reviews", label: "Reviews", icon: Star },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/enrollments", label: "Enrollments", icon: ClipboardList, support: true },
-  { href: "/admin/coupons", label: "Coupons", icon: TicketPercent },
+  { href: "/admin", label: "Overview", icon: LayoutDashboard, roles: ALL_STAFF },
+  { href: "/admin/earnings", label: "Earnings", icon: Wallet, roles: ALL_STAFF },
+  { href: "/admin/courses", label: "Courses", icon: BookOpen, roles: ALL_STAFF },
+  {
+    href: "/admin/assignments",
+    label: "Assignments",
+    icon: FileText,
+    roles: [...ALL_STAFF, "INSTRUCTOR"] as Role[],
+  },
+  {
+    href: "/admin/schedule",
+    label: "Schedule",
+    icon: CalendarDays,
+    roles: [...ALL_STAFF, "STUDENT_SUPPORT", "INSTRUCTOR"] as Role[],
+  },
+  {
+    href: "/admin/students",
+    label: "Students",
+    icon: GraduationCap,
+    roles: [...ALL_STAFF, "INSTRUCTOR"] as Role[],
+  },
+  { href: "/admin/instructors", label: "Instructors", icon: UserCircle, roles: ALL_STAFF },
+  { href: "/admin/reviews", label: "Reviews", icon: Star, roles: ALL_STAFF },
+  { href: "/admin/users", label: "Users", icon: Users, roles: ALL_STAFF },
+  {
+    href: "/admin/enrollments",
+    label: "Enrollments",
+    icon: ClipboardList,
+    roles: [...ALL_STAFF, "STUDENT_SUPPORT"] as Role[],
+  },
+  { href: "/admin/coupons", label: "Coupons", icon: TicketPercent, roles: ALL_STAFF },
+  {
+    href: "/admin/profile",
+    label: "My Profile",
+    icon: UserCog,
+    roles: ["INSTRUCTOR"] as Role[],
+  },
 ];
 
 function isLinkActive(pathname: string, href: string) {
@@ -28,8 +70,7 @@ function isLinkActive(pathname: string, href: string) {
 export function AdminSidebarNav({ role }: { role: Role }) {
   const pathname = usePathname();
   const closeSidebar = useCloseSidebar();
-  const visibleLinks =
-    role === "STUDENT_SUPPORT" ? links.filter((link) => link.support) : links;
+  const visibleLinks = links.filter((link) => link.roles.includes(role));
 
   return (
     <nav className="flex-1 overflow-y-auto p-4">

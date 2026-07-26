@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/roles";
+import { canManageCourse } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ assignmentId: string }> }
 ) {
   const session = await auth();
-  if (!session?.user || !isAdmin(session.user.role)) {
+  if (!session?.user) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -34,6 +34,10 @@ export async function GET(
 
   if (!assignment) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (!(await canManageCourse(session.user.role, session.user.id, assignment.courseId))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const submissionByUserId = new Map(assignment.submissions.map((s) => [s.userId, s]));

@@ -30,6 +30,7 @@ const roleBadges: Record<string, string> = {
   STUDENT_SUPPORT: "bg-teal-100 text-teal-700",
   ADMIN: "bg-purple-100 text-purple-700",
   SUPER_ADMIN: "bg-amber-100 text-amber-700",
+  INSTRUCTOR: "bg-indigo-100 text-indigo-700",
 };
 
 const enrollmentBadges: Record<string, string> = {

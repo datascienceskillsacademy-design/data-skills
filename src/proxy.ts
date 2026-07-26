@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { canAccessAdminPath, isStaff, SUPPORT_HOME } from "@/lib/roles";
+import { canAccessAdminPath, isStaff, adminHome } from "@/lib/roles";
 
 export async function proxy(request: NextRequest) {
   const session = await auth();
   const { pathname } = request.nextUrl;
 
   // ── Admin routes: must be authenticated staff (ADMIN / SUPER_ADMIN /
-  // STUDENT_SUPPORT). Support users only get their allowed sections. ────────
+  // STUDENT_SUPPORT / INSTRUCTOR). Restricted roles only get their allowed
+  // sections. ─────────────────────────────────────────────────────────────
   if (pathname.startsWith("/admin")) {
     if (!session?.user) {
       const loginUrl = new URL("/login", request.url);
@@ -19,7 +20,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
     if (!canAccessAdminPath(session.user.role, pathname)) {
-      return NextResponse.redirect(new URL(SUPPORT_HOME, request.url));
+      return NextResponse.redirect(new URL(adminHome(session.user.role), request.url));
     }
   }
 

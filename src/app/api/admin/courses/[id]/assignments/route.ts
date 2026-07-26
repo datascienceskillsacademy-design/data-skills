@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { isAdmin } from "@/lib/roles";
+import { canManageCourse } from "@/lib/courseAccess";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const schema = z.object({
   title: z.string().trim().min(2),
   docLink: z.string().trim().min(1),
+  moduleId: z.string().nullable().optional(),
 });
 
 export async function POST(
@@ -14,15 +15,18 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
-  if (!session?.user || !isAdmin(session.user.role)) {
+  const { id: courseId } = await params;
+
+  if (
+    !session?.user ||
+    !(await canManageCourse(session.user.role, session.user.id, courseId))
+  ) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { id: courseId } = await params;
-
   try {
     const body = await request.json();
-    const { title, docLink } = schema.parse(body);
+    const { title, docLink, moduleId } = schema.parse(body);
 
     const last = await prisma.assignment.findFirst({
       where: { courseId },
@@ -30,7 +34,7 @@ export async function POST(
     });
 
     const assignment = await prisma.assignment.create({
-      data: { courseId, title, docLink, order: (last?.order ?? 0) + 1 },
+      data: { courseId, title, docLink, moduleId: moduleId || null, order: (last?.order ?? 0) + 1 },
     });
 
     return NextResponse.json(assignment, { status: 201 });

@@ -27,6 +27,7 @@ model User {
   sessions              Session[]
   enrollments           Enrollment[]
   assignmentSubmissions AssignmentSubmission[]
+  courseAssignments     CourseInstructor[]
 }
 
 model Account {
@@ -89,15 +90,16 @@ model Course {
   category      String
   whatsappLink  String?
   meetLink      String?
-  isPublished   Boolean  @default(false)
-  isFeatured    Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isPublished   Boolean      @default(false)
+  isFeatured    Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-  modules        CourseModule[]
-  enrollments    Enrollment[]
-  classSchedules ClassSchedule[]
-  assignments    Assignment[]
+  modules               CourseModule[]
+  enrollments           Enrollment[]
+  classSchedules        ClassSchedule[]
+  assignments           Assignment[]
+  instructorAssignments CourseInstructor[]
 }
 
 model CourseModule {
@@ -107,9 +109,24 @@ model CourseModule {
   order       Int
   isCompleted Boolean @default(false)
 
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  assignments Assignment[]
 
   @@unique([courseId, order])
+}
+
+/**
+ * Links an INSTRUCTOR user to the course(s) they teach.
+ */
+model CourseInstructor {
+  id       String @id @default(cuid())
+  courseId String
+  userId   String
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, userId])
 }
 
 model ClassSchedule {
@@ -131,6 +148,7 @@ model ClassSchedule {
 model Assignment {
   id        String   @id @default(cuid())
   courseId  String
+  moduleId  String?
   title     String
   docLink   String
   order     Int
@@ -138,6 +156,7 @@ model Assignment {
   updatedAt DateTime @updatedAt
 
   course      Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module      CourseModule?          @relation(fields: [moduleId], references: [id], onDelete: SetNull)
   submissions AssignmentSubmission[]
 
   @@unique([courseId, order])
@@ -241,6 +260,7 @@ enum Role {
   ADMIN
   SUPER_ADMIN
   STUDENT_SUPPORT
+  INSTRUCTOR
 }
 
 enum CourseStatus {

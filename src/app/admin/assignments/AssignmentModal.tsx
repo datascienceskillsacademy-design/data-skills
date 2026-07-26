@@ -8,16 +8,23 @@ const fieldClass =
   "w-full rounded-xl border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100";
 const labelClass = "mb-1.5 block text-sm font-medium text-neutral-700";
 
+interface ModuleOption {
+  id: string;
+  title: string;
+}
+
 interface AssignmentModalProps {
   courseId: string;
   courseTitle: string;
-  assignment: { id: string; title: string; docLink: string } | null;
+  modules: ModuleOption[];
+  assignment: { id: string; title: string; docLink: string; moduleId: string | null } | null;
   onClose: () => void;
 }
 
 export function AssignmentModal({
   courseId,
   courseTitle,
+  modules,
   assignment,
   onClose,
 }: AssignmentModalProps) {
@@ -25,6 +32,7 @@ export function AssignmentModal({
   const isEdit = !!assignment;
   const [title, setTitle] = useState(assignment?.title ?? "");
   const [docLink, setDocLink] = useState(assignment?.docLink ?? "");
+  const [moduleId, setModuleId] = useState(assignment?.moduleId ?? "");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -40,7 +48,11 @@ export function AssignmentModal({
     const res = await fetch(url, {
       method: isEdit ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: title.trim(), docLink: docLink.trim() }),
+      body: JSON.stringify({
+        title: title.trim(),
+        docLink: docLink.trim(),
+        moduleId: moduleId || null,
+      }),
     });
 
     if (!res.ok) {
@@ -95,6 +107,24 @@ export function AssignmentModal({
               placeholder="e.g. Week 3: Dashboard Build"
               className={fieldClass}
             />
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              Module <span className="font-normal text-neutral-400">(optional)</span>
+            </label>
+            <select
+              value={moduleId}
+              onChange={(e) => setModuleId(e.target.value)}
+              className={fieldClass}
+            >
+              <option value="">No specific module</option>
+              {modules.map((mod) => (
+                <option key={mod.id} value={mod.id}>
+                  {mod.title}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

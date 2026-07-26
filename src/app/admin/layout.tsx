@@ -16,7 +16,12 @@ export default async function AdminLayout({
   const session = await auth();
   if (!session?.user || !isStaff(session.user.role)) redirect("/");
   const role = session.user.role;
-  const panelLabel = role === "STUDENT_SUPPORT" ? "Support Panel" : "Admin Panel";
+  const panelLabel =
+    role === "STUDENT_SUPPORT"
+      ? "Support Panel"
+      : role === "INSTRUCTOR"
+        ? "Instructor Panel"
+        : "Admin Panel";
 
   return (
     <AdminShell

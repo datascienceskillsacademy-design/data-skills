@@ -21,6 +21,7 @@ const schema = z.object({
   category: z.string(),
   isPublished: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  instructorUserIds: z.array(z.string()).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -31,9 +32,17 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const data = schema.parse(body);
+    const { instructorUserIds, ...data } = schema.parse(body);
 
     const course = await prisma.course.create({ data });
+
+    if (instructorUserIds && instructorUserIds.length > 0) {
+      await prisma.courseInstructor.createMany({
+        data: instructorUserIds.map((userId) => ({ courseId: course.id, userId })),
+        skipDuplicates: true,
+      });
+    }
+
     revalidatePath("/courses");
     revalidatePath("/");
     return NextResponse.json(course, { status: 201 });

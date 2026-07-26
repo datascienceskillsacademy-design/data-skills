@@ -3,17 +3,36 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ImagePlus, Loader2, X } from "lucide-react";
+import { ImagePlus, Loader2, X, UserCog } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import type { Course } from "@/generated/prisma/client";
 
-interface CourseEditFormProps {
-  course: Course | null;
+export interface InstructorOption {
+  id: string;
+  name: string | null;
+  email: string;
 }
 
-export function CourseEditForm({ course }: CourseEditFormProps) {
+interface CourseEditFormProps {
+  course: Course | null;
+  availableInstructors?: InstructorOption[];
+  assignedInstructorIds?: string[];
+}
+
+export function CourseEditForm({
+  course,
+  availableInstructors = [],
+  assignedInstructorIds = [],
+}: CourseEditFormProps) {
   const router = useRouter();
   const isNew = !course;
+  const [instructorIds, setInstructorIds] = useState<string[]>(assignedInstructorIds);
+
+  function toggleInstructor(id: string) {
+    setInstructorIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  }
 
   const [form, setForm] = useState({
     slug: course?.slug ?? "",
@@ -92,6 +111,7 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
         originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
         classCount: Number(form.classCount),
         classHours: Number(form.classHours),
+        instructorUserIds: instructorIds,
       };
 
       const url = isNew ? "/api/admin/courses" : `/api/admin/courses/${course.id}`;
@@ -287,6 +307,47 @@ export function CourseEditForm({ course }: CourseEditFormProps) {
             />
           </div>
         </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-neutral-400">
+          <UserCog className="h-4 w-4" />
+          Instructors
+        </h2>
+        <p className="mb-4 text-xs text-neutral-400">
+          Users with the Instructor role who teach this course. They&rsquo;ll see it in
+          their Instructor Panel.
+        </p>
+        {availableInstructors.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-neutral-200 px-4 py-4 text-center text-sm text-neutral-400">
+            No instructor accounts yet. Create one from Users and set their role to
+            Instructor.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {availableInstructors.map((instructor) => (
+              <label
+                key={instructor.id}
+                className="flex cursor-pointer items-center gap-3 rounded-xl border border-neutral-200 px-3.5 py-2.5 hover:bg-neutral-50"
+              >
+                <input
+                  type="checkbox"
+                  checked={instructorIds.includes(instructor.id)}
+                  onChange={() => toggleInstructor(instructor.id)}
+                  className="h-4 w-4 rounded border-neutral-300 text-primary-600"
+                />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium text-neutral-800">
+                    {instructor.name ?? "—"}
+                  </span>
+                  <span className="block truncate text-xs text-neutral-400">
+                    {instructor.email}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
       </Card>
 
       <Card className="space-y-4 p-6">
